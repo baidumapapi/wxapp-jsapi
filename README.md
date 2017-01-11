@@ -53,8 +53,8 @@
  height                | number             | 否      |marker高，默认为图片高度 
  alpha                 | number             | 否      |marker透明度，默认为1
  query                 | string             | 否      | 检索关键字，默认为生活服务、美食、酒店
- success               | Function([searchSuccess](#1.2))|否   | 检索成功后回掉函数
- fail                  | Function([searchFail](#1.3))|否      | 检索失败后回掉函数
+ success               | Function([searchSuccess](#1.2))|否   | 检索成功后回调回调函数
+ fail                  | Function([searchFail](#1.3))|否      | 检索失败后回调函数
  
  其他参数和[Place API](http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-placeapi)请求参数一致。
  <h5 id="1.2">***searchSuccess: Object***</h5>
@@ -80,8 +80,8 @@
  
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
- success               | Function([suggestionSuccess](#2.2))|否   | 检索成功后回掉函数
- fail                  | Function([suggestionFail](#2.3))|否      | 检索失败后回掉函数
+ success               | Function([suggestionSuccess](#2.2))|否   | 检索成功后回调函数
+ fail                  | Function([suggestionFail](#2.3))|否      | 检索失败后回调函数
  
  其他参数和[Place Suggestion API](http://lbsyun.baidu.com/index.php?title=webapi/place-suggestion-api)请求参数一致。
  
@@ -112,8 +112,8 @@
  width                 | number             | 否      |marker宽，默认为图片宽度 
  height                | number             | 否      |marker高，默认为图片高度 
  alpha                 | number             | 否      |marker透明度，默认为1
- success               | Function([regeocodingSuccess](#3.2))|否   | 检索成功后回掉函数
- fail                  | Function([regeocodingFail](#3.3))|否      | 检索失败后回掉函数
+ success               | Function([regeocodingSuccess](#3.2))|否   | 检索成功后回调函数
+ fail                  | Function([regeocodingFail](#3.3))|否      | 检索失败后回调函数
  
  其他参数和[Geocoding](http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding#.E9.80.86.E5.9C.B0.E7.90.86.E7.BC.96.E7.A0.81.E6.9C.8D.E5.8A.A1)请求参数一致。
  
@@ -138,8 +138,8 @@
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
  location              | string             | 否      |要解析的纬经度例如：116.43,40.75 默认值为当前定位点
- success               | Function([weatherSuccess](#4.2))|否   | 检索成功后回掉函数
- fail                  | Function([weatherFail](#4.3))|否      | 检索失败后回掉函数
+ success               | Function([weatherSuccess](#4.2))|否   | 检索成功后回调函数
+ fail                  | Function([weatherFail](#4.3))|否      | 检索失败后回调函数
  
  其他参数和[天气接口](http://developer.baidu.com/map/wiki/index.php?title=car/api/weather)请求参数一致。
  
