@@ -100,8 +100,7 @@
  errMsg                | string             | 是     |错误信息
  statusCode            | number             | 是     |错误状态码
  
- 
-<h5 id="3.1">***regeocodingParam: Object***</h5>
+ <h5 id="3.1">***suggestionParam: Object***</h5>
  regeocoding检索参数对象结构
  
   属性名                | 类型                | 是否必须| 描述
