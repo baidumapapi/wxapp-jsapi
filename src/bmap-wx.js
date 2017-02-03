@@ -239,8 +239,8 @@ class BMapWX {
                         outputRes["wxMarkerData"] = [];    
                         outputRes["wxMarkerData"][0] = {
                             id: 0,
-                            latitude: result["latitude"],
-                            longitude: result["longitude"],
+                            latitude: poiObj["location"]["lat"],
+                            longitude: poiObj["location"]["lng"],
                             address: poiObj["formatted_address"],
                             iconPath: otherparam["iconPath"],
                             iconTapPath: otherparam["iconTapPath"],
