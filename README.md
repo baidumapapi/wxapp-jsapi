@@ -3,7 +3,8 @@
 [百度地图开放平台](http://lbsyun.baidu.com/)  
 [百度地图微信小程序JSAPI服务](http://lbsyun.baidu.com/index.php?title=wxjsapi)  
 ##更新日志##
-2016.01.11:发布v1.0版本，支持search、suggestion、regeocoding和weather四种接口。
+2016.01.11:发布v1.0版本，支持search、suggestion、regeocoding和weather四种接口。  
+2016.02.15:修复location参数无效的bug
 ##概述
 百度地图微信小程序JavaScript API（下文简称小程序JSAPI）的作用是对百度地图Web服务API中的部分接口按照微信小程序的规范进行了前端JS封装，方便了微信小程序开发者的调用。部分接口对返回的POI等数据按照微信小程序的数据格式进行了处理，可直接用于小程序的map中。目前开放的小程序JSAPI接口和调用的WebAPI接口对应关系为：
 

@@ -126,11 +126,11 @@ class BMapWX {
         };
         let locationcomplete = function (result) {
         };
-        if (!searchparam["location"]) {
+        if (!param["location"]) {
             that.getWXLocation(type, locationsuccess, locationfail, locationcomplete);
         } else {
-            let longitude = searchparam.location.split(',')[1];
-            let latitude = searchparam.location.split(',')[0];
+            let longitude = param.location.split(',')[1];
+            let latitude = param.location.split(',')[0];
             let errMsg = 'input location';
             let res = {
                 errMsg: errMsg,
@@ -268,11 +268,11 @@ class BMapWX {
         }
         let locationcomplete = function (result) {
         };
-        if (!regeocodingparam["location"]) {
+        if (!param["location"]) {
             that.getWXLocation(type, locationsuccess, locationfail, locationcomplete);
         } else {
-            let longitude = regeocodingparam.location.split(',')[1];
-            let latitude = regeocodingparam.location.split(',')[0];
+            let longitude = param.location.split(',')[1];
+            let latitude = param.location.split(',')[0];
             let errMsg = 'input location';
             let res = {
                 errMsg: errMsg,
@@ -348,11 +348,11 @@ class BMapWX {
         }
         let locationcomplete = function (result) {
         }
-        if (!weatherparam["location"]) {
+        if (!param["location"]) {
             that.getWXLocation(type, locationsuccess, locationfail, locationcomplete);
         } else {
-            let longitude = weatherparam.location.split(',')[0];
-            let latitude = weatherparam.location.split(',')[1];
+            let longitude = param.location.split(',')[0];
+            let latitude = param.location.split(',')[1];
             let errMsg = 'input location';
             let res = {
                 errMsg: errMsg,
