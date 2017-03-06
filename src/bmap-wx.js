@@ -201,6 +201,7 @@ class BMapWX {
         param = param || {};
         let regeocodingparam = {
             coordtype: param["coordtype"] || 'gcj02ll',
+            location: param['location'] || false,
             pois: param["pois"] || 0,
             output: param["output"] || 'json',
             ak: that.ak,
