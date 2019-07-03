@@ -1,0 +1,7 @@
+<view class="map_container">
+  <map class="map" id="map" longitude="{{longitude}}" latitude="{{latitude}}" scale="14" show-location="true" markers="{{markers}}" bindmarkertap="makertap"></map>
+</view>
+<view class="rgc_info">
+  <text>经度：{{longitude}}</text>
+  <text>纬度：{{latitude}}</text>
+</view>

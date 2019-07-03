@@ -2,6 +2,7 @@
   "pages":[
     "pages/search/search",
     "pages/suggestion/suggestion",
+    "pages/geocoding/geocoding",
     "pages/regeocoding/regeocoding",
     "pages/weather/weather"
   ],
