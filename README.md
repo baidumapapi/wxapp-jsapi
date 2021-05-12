@@ -1,13 +1,19 @@
-# 百度地图微信小程序JavaScript API v1.1
-**相关链接：**  
+# 百度地图微信小程序 JS API v1.2
+
+百度地图微信小程序JavaScript API（下文简称小程序JSAPI）的作用是对百度地图Web服务API中的部分接口按照微信小程序的规范进行了前端JS封装，方便了微信小程序开发者的调用。部分接口对返回的POI等数据按照微信小程序的数据格式进行了处理，可直接用于小程序的map中。
+相关链接：
 [百度地图开放平台](https://lbs.baidu.com/)  
 [百度地图微信小程序JSAPI服务](https://lbs.baidu.com/index.php?title=wxjsapi)  
-##更新日志##
-2017.01.11:发布v1.0版本，支持search、suggestion、regeocoding和weather四种接口。  
-2017.02.15:修复location参数无效的bug。
-2019.07.03:发布v1.1版本，增加geocoding接口，支持地址信息到经纬度的转换。
-##概述
-百度地图微信小程序JavaScript API（下文简称小程序JSAPI）的作用是对百度地图Web服务API中的部分接口按照微信小程序的规范进行了前端JS封装，方便了微信小程序开发者的调用。部分接口对返回的POI等数据按照微信小程序的数据格式进行了处理，可直接用于小程序的map中。目前开放的小程序JSAPI接口和调用的WebAPI接口对应关系为：
+
+## 更新日志
+2017.01.11：发布v1.0版本，支持search、suggestion、regeocoding和weather四种接口。  
+2017.02.15：修复location参数无效的bug。
+2019.07.03：发布v1.1版本，增加geocoding接口，支持地址信息到经纬度的转换。
+2021.05.12：发布v1.2版本，更新weather查询接口，支持并增加海外天气查询接口weatherAbroad。
+
+## 接口说明
+
+目前开放的小程序JSAPI接口和调用的WebAPI接口对应关系为：
 
  小程序JSAPI            | Web服务API        
 ---------------------- | -------------
@@ -15,14 +21,16 @@
  suggestion            | Place Suggestion API
  regeocoding           | Geocoding API的逆地址解析部分
  geocoding             | Geocoding API的正地址解析部分
- weather               | 天气 API
- 
-##目录结构
+ weather               | weather 国内天气查询
+ weatherAbroad         | weather_abroad 海外天气查询
+
+## 目录结构
 >demo ------------- 小程序JSAPI完整DEMO  
 >src  --------------- 小程序JSAPI源码   
+>bmap-wx.min.js --------------- 小程序JSAPI压缩库
 >
 
-##类参考
+## 类参考
 <h3>BMapWX</h3>
 此类是小程序JSAPI的核心类。  
  <h4>**构造函数:**</h4> 
@@ -31,7 +39,7 @@
 ---------------------- | -------------
  BMapWX(ak: string)    | 创建 BMapWX对象时，必须要传入ak
  
- <h4>**方法:**</h4>
+ <h4>方法:</h4>
  
   方法名                | 返回值              | 描述
 ---------------------- | -------------------| -----
@@ -43,7 +51,7 @@
  
   
  
- <h4>**参数:**</h4>
+ <h4>参数:</h4>
  
  <h5 id="1.1">***searchParam: Object***</h5>
  search检索参数对象结构
