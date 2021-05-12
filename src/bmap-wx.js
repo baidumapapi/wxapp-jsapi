@@ -1,7 +1,7 @@
 /**
  * @file 微信小程序JSAPI
- * @author 崔健 cuijian03@baidu.com 2017.01.10
- * @update 邓淑芳 623996689@qq.com 2019.07.03
+ * @author bmap fe
+ * @version v1.2
  */
 
 /**
@@ -369,19 +369,20 @@ class BMapWX {
     } 
   
     /**
-     * 天气检索
+     * 国内天气检索
      *
-     * @param {Object} param 检索配置
+     * @param {Object} param 检索配置参数
+     * 参数对象结构可以参考：https://lbsyun.baidu.com/index.php?title=webapi/weather
      */
     weather(param) {
       var that = this;
       param = param || {};
       let weatherparam = {
-        coord_type: param["coord_type"] || 'gcj02',
-        output: param["output"] || 'json',
+        district_id: param["district_id"] || '222405',
         ak: that.ak,
-        sn: param["sn"] || '',
-        timestamp: param["timestamp"] || ''
+        data_type: param["data_type"] || 'all',
+        output: param["output"] || 'json',
+        coordtype: param["coordtype"] || 'wgs84'
       };
       let otherparam = {
         success: param["success"] || function () { },
@@ -391,7 +392,7 @@ class BMapWX {
       let locationsuccess = function (result) {
         weatherparam["location"] = result["longitude"] + ',' + result["latitude"];
         wx.request({
-          url: 'https://api.map.baidu.com/telematics/v3/weather',
+          url: 'https://api.map.baidu.com/weather/v1',
           data: weatherparam,
           header: {
             "content-type": "application/json"
@@ -400,20 +401,108 @@ class BMapWX {
           success(data) {
             let res = data["data"];
             if (res["error"] === 0 && res["status"] === 'success') {
-              let weatherArr = res["results"];
+              let weatherArr = res["result"];
               // outputRes 包含两个对象，
               // originalData为百度接口返回的原始数据
               // wxMarkerData为小程序规范的marker格式
               let outputRes = {};
               outputRes["originalData"] = res;
-              outputRes["currentWeather"] = [];
-              outputRes["currentWeather"][0] = {
-                currentCity: weatherArr[0]["currentCity"],
-                pm25: weatherArr[0]["pm25"],
-                date: weatherArr[0]["weather_data"][0]["date"],
-                temperature: weatherArr[0]["weather_data"][0]["temperature"],
-                weatherDesc: weatherArr[0]["weather_data"][0]["weather"],
-                wind: weatherArr[0]["weather_data"][0]["wind"]
+              outputRes["wxMarkerData"] = [];
+              outputRes["wxMarkerData"][0] = {
+                country: weatherArr['location']['country'],   // 国家
+                province: weatherArr['location']['province'], // 省份
+                currentCity: weatherArr['location']["city"],  // 城市
+                district: weatherArr['location']['name'],     // 区县
+                weatherDesc: weatherArr['now']['text'],       // 天气现象
+                temperature: weatherArr['now']['temp'],       // 温度
+                windClass: weatherArr['now']['wind_class'],   // 风力
+                windDir: weatherArr['now']['winw_dir'],       // 风向
+                humidity: weatherArr['now']['rh'],            // 相对湿度
+                updatetime: weatherArr['now']['uptime'],      // 更新时间
+              };
+              otherparam.success(outputRes);
+            } else {
+              otherparam.fail({
+                errMsg: res["message"],
+                statusCode: res["status"]
+              });
+            }
+          },
+          fail(data) {
+            otherparam.fail(data);
+          }
+        });
+      }
+      let locationfail = function (result) {
+        otherparam.fail(result);
+      }
+      let locationcomplete = function (result) {
+      }
+      if (!param["location"]) {
+        that.getWXLocation(type, locationsuccess, locationfail, locationcomplete);
+      } else {
+        let longitude = param.location.split(',')[0];
+        let latitude = param.location.split(',')[1];
+        let errMsg = 'input location';
+        let res = {
+          errMsg: errMsg,
+          latitude: latitude,
+          longitude: longitude
+        };
+        locationsuccess(res);
+      }
+    }
+
+    /**
+     * 海外天气检索
+     *
+     * @param {Object} param 检索配置参数
+     * 参数对象结构可以参考：https://lbsyun.baidu.com/index.php?title=webapi/weather-abroad
+     */
+    weatherAbroad(param) {
+      var that = this;
+      param = param || {};
+      let weatherparam = {
+        district_id: param["district_id"] || 'JPN10041030001',
+        ak: that.ak,
+        data_type: param["data_type"] || 'all',
+        output: param["output"] || 'json',
+        coordtype: param["coordtype"] || 'wgs84'
+      };
+      let otherparam = {
+        success: param["success"] || function () { },
+        fail: param["fail"] || function () { }
+      };
+      let type = 'gcj02';
+      let locationsuccess = function (result) {
+        weatherparam["location"] = result["longitude"] + ',' + result["latitude"];
+        wx.request({
+          url: 'https://api.map.baidu.com/weather_abroad/v1',
+          data: weatherparam,
+          header: {
+            "content-type": "application/json"
+          },
+          method: 'GET',
+          success(data) {
+            let res = data["data"];
+            if (res["error"] === 0 && res["status"] === 'success') {
+              let weatherArr = res["result"];
+              // outputRes 包含两个对象，
+              // originalData为百度接口返回的原始数据
+              // wxMarkerData为小程序规范的marker格式
+              let outputRes = {};
+              outputRes["originalData"] = res;
+              outputRes["wxMarkerData"] = [];
+              outputRes["wxMarkerData"][0] = {
+                country: weatherArr['location']['country'],   // 国家
+                province: weatherArr['location']['province'], // 省份
+                currentCity: weatherArr['location']["city"],  // 城市
+                weatherDesc: weatherArr['now']['text'],       // 天气现象
+                temperature: weatherArr['now']['temp'],       // 温度
+                windClass: weatherArr['now']['wind_class'],   // 风力
+                windDir: weatherArr['now']['winw_dir'],       // 风向
+                humidity: weatherArr['now']['rh'],            // 相对湿度
+                updatetime: weatherArr['now']['uptime'],      // 更新时间
               };
               otherparam.success(outputRes);
             } else {
