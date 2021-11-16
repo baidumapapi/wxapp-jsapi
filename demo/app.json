@@ -10,7 +10,7 @@
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#121212",
     "navigationBarTitleText": "BMapWX",
-    "navigationBarTextStyle":"#fff",
+    "navigationBarTextStyle":"white",
     "backgroundColor": "#ddd"
   },
    "tabBar": {
