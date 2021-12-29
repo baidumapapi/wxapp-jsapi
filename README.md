@@ -1,6 +1,6 @@
 # 百度地图微信小程序JS API v1.1
 
-** 相关链接：**  
+## 相关链接
 [百度地图开放平台](https://lbs.baidu.com/)  
 [百度地图微信小程序JSAPI服务](https://lbs.baidu.com/index.php?title=wxjsapi)  
 
@@ -30,13 +30,13 @@
 <h3>BMapWX</h3>
 此类是小程序JSAPI的核心类。  
 
- * 构造函数:
+ ### 构造函数:
 
  构造函数                | 描述          
 ---------------------- | -------------
  BMapWX(ak: string)    | 创建 BMapWX对象时，必须要传入ak
  
- * 方法:
+ ### 方法:
  
   方法名                | 返回值              | 描述
 ---------------------- | -------------------| -----
@@ -45,9 +45,7 @@
  regeocoding([regeocodingParam](#3.1): Object)| none | 进行regeocoding检索，根据经纬度获得对应的地理描述信息
  geocoding([geocodingParam](#5.1): Object)| none     | 进行geocoding检索，根据经纬度获得对应的地理描述信息
  
-  
- 
- * 参数:
+ ### 参数:
  
  <h5 id="1.1">searchParam: Object</h5>
  search检索参数对象结构
