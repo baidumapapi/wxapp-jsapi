@@ -42,60 +42,32 @@
  weather               | 天气服务（weather/v1/，路径需带末尾斜杠，SDK 已内置）
  weatherAbroad         | 海外天气服务（weather_abroad/v1/，同上）
  
-## 目录结构
->demo ------------- 小程序JSAPI完整DEMO  
->src  --------------- 小程序JSAPI源码  
->scripts ------------ 构建脚本（src -> bmap-wx.min.js 并同步 demo/libs）  
->package.json ------- 依赖与构建命令  
+## 快速开始
 
-## 构建
-依赖 Node.js（>= 14）：
+1. **引入**：将 `demo/libs/bmap-wx.min.js` 复制到你的小程序目录（纯 ES5，可直接运行；或使用 `src/bmap-wx.js` 源码，ES2017+ 语法，需自备转译）：
 
-```bash
-npm install   # 首次安装依赖
-npm run build # 构建 src/bmap-wx.js 并同步 demo
-npm run watch # 监听 src/bmap-wx.js，变更后自动构建并同步 demo
+```js
+const { BMapWX } = require('./libs/bmap-wx.min.js');
+const bmap = new BMapWX({ ak: '你的AK' }); // 服务端 AK 可另传 sk，SDK 自动生成 SN 签名
+
+bmap.search({
+  query: '天安门',
+  success(res) {
+    console.log(res.wxMarkerData); // 小程序 map markers（gcj02），可直接用于 <map markers>
+  },
+  fail(err) {
+    console.log(err.message, err.statusCode);
+  },
+});
 ```
 
-构建管线：`src/bmap-wx.js`（ES6+ / async-await 源码）
-→ **babel** 转译为 ES5（let/const、箭头函数、class、async/await 均降级，不依赖 regenerator 运行时）
-→ **terser** 压缩 → 产物。
+2. **AK 申请**：在[百度地图开放平台](https://lbsyun.baidu.com/)控制台创建应用。开发调试优先用「微信小程序」类型 AK（绑定项目 AppID）；若遇 220「APP Referer 校验失败」可改用**服务端**类型 AK（IP 白名单留空或配 SN 签名兜底，SK 填入 `sk` 字段）。
+3. **合法域名**：正式发布前在小程序后台把 `https://api.map.baidu.com` 加入 request 合法域名（开发阶段可先在开发者工具中勾选"不校验合法域名"）。
+4. **调用**：方法均为回调式（`success` / `fail`），详见下方[类参考](#类参考)；成功入参统一为 `{ originalData, ...规范字段 }`，失败入参为 `{ errMsg, message, statusCode, rawMessage }`。
 
-构建产物：
-- `demo/libs/bmap-wx.min.js` —— demo 引用的压缩包（纯 ES5 语法，可直接在小程序中运行）
+## Demo
 
-> 旧版仓库根目录的 `bmap-wx.min.js` 已随本次重构删除：通过 `require('<旧路径>')` 接入的旧代码，
-> 请改引 `demo/libs/bmap-wx.min.js`（或自行将产物复制到原位置）。`package.json` 的 `main`
-> 指向未转译的 `src/bmap-wx.js`（ES2017 语法，TS 类型声明见根目录 `index.d.ts`）；node/npm 侧
-> 消费请自行转译或改用产物文件。
-
-测试：
-```bash
-npm test              # 本地用例（签名 / 坐标转换 / 解析 / 错误兜底，无网络依赖）
-BMAP_AK=<ak> npm test # 追加 8 个真实接口用例（search/suggestion/geocoding/逆编码/4 种路线）
-```
-
-修改 `src/bmap-wx.js` 后重新执行 `npm run build` 即可，脚本内置自检（校验产物 12 个方法齐全）。
-
-## Demo 运行说明
-1. 使用微信开发者工具导入 `demo` 目录打开本项目。
-2. 配置 ak：先执行 `cp demo/config.example.js demo/config.js` 复制模板，再填入你在[百度地图开放平台](https://lbsyun.baidu.com/)控制台申请的 ak（`demo/config.js` 已被 git 忽略，仅存于本地，不会随仓库泄露）。**AK 类型选择（重要）**：
-   - **开发调试（开发者工具）**：优先用「微信小程序」类型 AK（绑定项目 AppID，工具直连模式即可通过校验）；若遇到 220「APP Referer 校验失败」，多为工具走了本地代理转发（请求 Referer 变成 127.0.0.1），可尝试刷新工具/切换代理设置，或改用**服务端**类型 AK（IP 白名单留空或 SN 校验，后者把 SK 填入 `demo/config.js` 的 `sk` 字段，SDK 自动签名）兜底；
-   - **发布真机**：可用「微信小程序」类型 AK（需绑定小程序的真实 AppID），或沿用服务端 AK（需配 SN 签名/合法域名）。
-3. 本项目已关闭 `urlCheck`（开发者工具中"不校验合法域名"），可直接请求 `https://api.map.baidu.com`；正式发布前请在小程序后台将 `https://api.map.baidu.com` 加入 request 合法域名。
-4. demo 以引导页（pages/index）为入口，点击卡片进入示例页面：周边探索（explore 综合演示：定位+天气+检索+路线+海报）、检索（search 周边检索）、联想（suggestion 关键词建议）、解析（geocoding 地理编码）、逆解析（reverseGeocoding 逆地理编码）、路线规划（driving/transit/walking/riding 四种方式，多方案与行程预览）、静态图（staticMap 生成地图图片，含取景联动）、天气（weather 按当前定位查询实时天气，支持国际城市切换）。页面代码为最新小程序风格（ES2017+ / async-await / rpx）。
-5. 天气接口（weather / weatherAbroad）与其它 Web 服务 API 一致；若手工拼 URL 遇到 302，请确认路径是否带了末尾斜杠（`/weather/v1/`，SDK 已内置）。
-
-## 上线检查清单
-提交前/发版前逐项确认：
-
-1. **AK 安全**：`demo/config.js`（本地真实密钥）已被 `.gitignore` 忽略，不会提交；仓库发布的是 `demo/config.example.js` 占位模板（`ak: ''`）。真实密钥仅存本地，或通过构建注入。
-2. **AK 类型与配额**：正式环境使用已开通所需服务（含路线规划等配额服务）的 AK。
-3. **合法域名**：小程序后台「开发管理 → 服务器域名」将 `https://api.map.baidu.com` 加入 request 合法域名（演示阶段可用工具内"不校验合法域名"替代）。
-4. **隐私声明**：小程序后台「设置 → 服务内容声明 → 用户隐私保护指引」中声明位置信息用途（`getLocation` 权限）；`demo/app.json` 的 `permission` / `requiredPrivateInfos` 已就位，需与后台声明保持一致。
-5. **审核类目**：涉及地图/位置能力的类目需与小程序主体资质匹配（个人主体对地图类目限制较多，请以微信审核规则为准）。
-6. **产物同步**：改动 `src/bmap-wx.js` 后执行 `npm run build`，确认 `demo/libs/bmap-wx.min.js` 为最新（提交产物保证 demo 开箱即用）。
-7. **回归**：`npm test` 全绿；有条件时用 `BMAP_AK=<正式ak> npm test` 跑真实接口用例。
+`demo` 目录为完整示例小程序，包含周边探索（explore）、周边检索、关键词联想、地理编码、逆地理编码、路线规划（多方案）、静态图（取景联动）、天气（国际城市切换）等页面。运行前复制 `demo/config.example.js` 为 `demo/config.js` 并填入你的 AK（该文件已被 git 忽略，密钥不会入库）。
 
 ## 类参考
 <h3>BMapWX</h3>
