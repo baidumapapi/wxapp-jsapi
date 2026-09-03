@@ -381,7 +381,7 @@ bmap.search({
  rawMessage            | string             | 是     |与 errMsg 相同
 
  <h4 id="8.1">staticMapParam: Object</h4>
- 静态图参数（本地拼装 URL，**不发起网络请求**；得到 url 后直接用于 `<image src="...">`）
+ 静态图参数（本地拼装 URL，**不发起网络请求**；得到 url 后直接用于 &lt;image src="..."&gt; 组件）
 
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
