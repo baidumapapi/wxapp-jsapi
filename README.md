@@ -39,8 +39,8 @@
  walking               | 路线规划 API 步行（direction/v2/walking）
  transit               | 路线规划 API 公交（direction/v2/transit）
  riding                | 路线规划 API 骑行（direction/v2/riding）
- weather               | 天气服务（weather/v1/，路径需带末尾斜杠，SDK 已内置）
- weatherAbroad         | 海外天气服务（weather_abroad/v1/，同上）
+ weather               | 天气服务（weather/v1/）
+ weatherAbroad         | 海外天气服务（weather_abroad/v1/）
  
 ## 快速开始
 
@@ -93,8 +93,8 @@ bmap.search({
  walking([routeParam](#6.2): Object)| none | 步行路线规划（direction/v2/walking）
  transit([routeParam](#6.2): Object)| none | 公交（含地铁）路线规划（direction/v2/transit）
  riding([routeParam](#6.2): Object)| none | 骑行路线规划（direction/v2/riding）
- weather([weatherParam](#7.1): Object)| none | 国内天气（weather/v1/，路径斜杠已内置）
- weatherAbroad([weatherParam](#7.1): Object)| none | 海外天气（同上）
+ weather([weatherParam](#7.1): Object)| none | 国内天气查询
+ weatherAbroad([weatherParam](#7.1): Object)| none | 海外天气查询
  staticMap([staticMapParam](#8.1): Object)| none | 生成静态图 URL（可直接用于 &lt;image src&gt;）
 
  > **所有接口成功回调入参统一为 `{ originalData, ...规范字段 }`**：
@@ -386,8 +386,6 @@ bmap.search({
  coordtype             | string             | 否      |坐标类型，默认 gcj02
  success               | Function([weatherSuccess](#7.2)) | 否 | 成功回调，入参 { originalData, weatherData, wxMarkerData(兼容) }
  fail                  | Function([weatherFail](#7.3)) | 否 | 失败回调，入参 { errMsg, message, statusCode, rawMessage }
-
-> ⚠️ 接口地址须为 `https://api.map.baidu.com/weather/v1/`（**末尾带斜杠**），省略斜杠会返回 302；SDK 已内置正确地址。
 
  示例：
 
