@@ -1,38 +1,30 @@
 {
-  "pages":[
+  "pages": [
+    "pages/index/index",
+    "pages/explore/explore",
     "pages/search/search",
     "pages/suggestion/suggestion",
     "pages/geocoding/geocoding",
     "pages/regeocoding/regeocoding",
+    "pages/route/route",
+    "pages/staticmap/staticmap",
     "pages/weather/weather"
   ],
-  "window":{
-    "backgroundTextStyle":"light",
+  "window": {
+    "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#121212",
     "navigationBarTitleText": "BMapWX",
-    "navigationBarTextStyle":"white",
-    "backgroundColor": "#ddd"
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f2f2f7"
   },
-   "tabBar": {
-      "color": "#000",
-      "selectedColor": "#4db900",
-      "backgroundColor": "#fbfbfd",
-      "position": "bottom",
-      "list": [{
-        "pagePath": "pages/search/search",
-        "text": "search"
-      },
-      {
-        "pagePath": "pages/suggestion/suggestion",
-        "text": "suggestion"
-      },
-      {
-        "pagePath": "pages/regeocoding/regeocoding",
-        "text": "regeocoding"
-      },
-      {
-        "pagePath": "pages/weather/weather",
-        "text": "weather"
-      }]
-  } 
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于地图相关功能的展示"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ]
 }

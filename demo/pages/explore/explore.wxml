@@ -1,0 +1,146 @@
+<view class="page">
+  <!-- ================= 地图 ================= -->
+  <view class="map-wrap map-main">
+    <map
+      class="map"
+      longitude="{{longitude}}"
+      latitude="{{latitude}}"
+      scale="14"
+      show-location
+      markers="{{markers}}"
+      polyline="{{polyline}}"
+      bindmarkertap="onMarkerTap"
+    />
+
+    <view class="map-cap" wx:if="{{weather}}" bindtap="toggleWeather">
+      <view class="cap-dot" style="background:{{weatherDot}}" />
+      <text class="cap-text">{{weather.currentCity}} {{weather.weatherDesc}} {{weather.temperature}}°</text>
+      <text class="cap-arrow">{{showWeather ? '⌃' : '⌄'}}</text>
+    </view>
+
+    <view class="map-loading" wx:if="{{searching}}">
+      <view class="spinner" />
+      <text>正在探索周边…</text>
+    </view>
+  </view>
+
+  <!-- ================= 当前位置条 ================= -->
+  <view class="loc-bar" wx:if="{{located}}">
+    <text class="loc-pin">●</text>
+    <text class="loc-text">{{locationText}}</text>
+    <view class="loc-refresh" bindtap="locate">重新定位</view>
+  </view>
+
+  <!-- ================= 天气卡（点击地图右上角展开/收起） ================= -->
+  <view class="card hero weather-panel {{weatherTheme}}" wx:if="{{showWeather && weather}}">
+    <view class="wp-head">
+      <view class="wp-city">{{weather.currentCity}}<text class="wp-district" wx:if="{{weather.district}}"> · {{weather.district}}</text></view>
+      <view class="wp-now">{{weather.weatherDesc}} {{weather.temperature}}°<text class="wp-feels" wx:if="{{weather.feelsLike != null}}"> 体感{{weather.feelsLike}}°</text></view>
+    </view>
+    <view class="wp-forecast">
+      <view class="wp-fc" wx:for="{{forecast}}" wx:key="date">
+        <view class="wp-fc-week">{{item.week}}</view>
+        <view class="wp-fc-dot" style="background:{{item.dotColor}}" />
+        <view class="wp-fc-temp">{{item.high}}°</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ================= 搜索 + 联想 ================= -->
+  <view class="search-box">
+    <view class="search-icon" />
+    <input
+      class="search-input"
+      placeholder="搜索地点，如：烤鸭店"
+      placeholder-class="search-placeholder"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindinput="onKeywordInput"
+      bindconfirm="confirmSearch"
+    />
+  </view>
+
+  <view class="card sug-card" wx:if="{{suggestions.length}}">
+    <view class="sug-item" wx:for="{{suggestions}}" wx:key="name"
+          hover-class="sug-hover" data-name="{{item.name}}" bindtap="onSugTap">
+      <view class="sug-badge">{{index + 1}}</view>
+      <view class="sug-body">
+        <view class="sug-name">{{item.name}}</view>
+        <view class="sug-address" wx:if="{{item.city || item.address}}">{{item.city}}{{item.district}}{{item.address}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ================= 场景 chips ================= -->
+  <view class="scene-bar">
+    <view class="scene-chip {{activeScene === item ? 'scene-active' : ''}}"
+          wx:for="{{scenes}}" wx:key="*this"
+          data-scene="{{item}}" bindtap="onSceneTap">{{item}}</view>
+  </view>
+
+  <!-- ================= POI 横滑卡片 ================= -->
+  <scroll-view class="poi-scroll" scroll-x wx:if="{{pois.length}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="poi-card" wx:for="{{pois}}" wx:key="id"
+          hover-class="poi-hover" data-id="{{item.id}}" bindtap="onPoiTap">
+      <view class="poi-title">{{item.title}}</view>
+      <view class="poi-addr">{{item.address || '—'}}</view>
+      <view class="poi-foot">
+        <text class="poi-dist" wx:if="{{item.distText}}">{{item.distText}} 距你</text>
+        <text class="poi-go">详情 ›</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="empty" wx:if="{{!searching && !pois.length}}">切换场景或搜索地点，开始探索</view>
+
+  <view class="error" wx:if="{{error}}">{{error}}</view>
+
+  <!-- ================= POI 详情弹层 ================= -->
+  <view class="mask" wx:if="{{showDetail}}" bindtap="closeDetail" />
+  <view class="sheet" wx:if="{{showDetail}}">
+    <view class="sheet-handle" />
+
+    <view class="sheet-title">{{detail.title}}</view>
+    <view class="sheet-row" wx:if="{{detail.address}}">
+      <text class="sheet-label">地址</text>
+      <text class="sheet-value">{{detail.address}}</text>
+    </view>
+    <view class="sheet-row" wx:if="{{detail.telephone}}">
+      <text class="sheet-label">电话</text>
+      <text class="sheet-value sheet-phone" bindtap="callPoi">{{detail.telephone}}</text>
+    </view>
+    <view class="sheet-row" wx:if="{{detail.distText}}">
+      <text class="sheet-label">距离</text>
+      <text class="sheet-value">{{detail.distText}}（从你当前位置）</text>
+    </view>
+
+    <view class="sheet-actions">
+      <button class="btn btn-outline" bindtap="makePoster" loading="{{posterLoading}}">地图海报</button>
+      <button class="btn btn-primary" bindtap="planRoute" loading="{{routing}}">到这里去</button>
+    </view>
+
+    <image wx:if="{{poster}}" class="sheet-poster" src="{{poster}}" mode="widthFix"
+           bindlongpress="savePoster" />
+  </view>
+
+  <!-- ================= 路线面板（常驻，切换方式不卸载） ================= -->
+  <view class="route-panel" wx:if="{{showPanel}}">
+    <view class="segment">
+      <view class="segment-item {{routeMode === item.key ? 'segment-item-active' : ''}}"
+            wx:for="{{modes}}" wx:key="key"
+            data-key="{{item.key}}" bindtap="onModeTap">{{item.label}}</view>
+    </view>
+
+    <view class="route-row" wx:if="{{routeInfo}}">
+      <view class="route-item"><view class="route-value">{{routeInfo.distance}}</view><view class="route-label">距离</view></view>
+      <view class="route-item"><view class="route-value">{{routeInfo.duration}}</view><view class="route-label">耗时</view></view>
+      <view class="route-item"><view class="route-value">{{routeInfo.count}}</view><view class="route-label">方案</view></view>
+    </view>
+    <view class="route-hint" wx:else>
+      <view class="spinner" wx:if="{{routing}}" />
+      <text>{{routing ? '正在为您规划路线…' : '暂无方案，点击下方按钮重新规划'}}</text>
+    </view>
+
+    <button class="btn btn-primary btn-block" loading="{{routing}}" bindtap="planRoute">{{routeInfo ? '重新规划（' + routeInfo.mode + '）' : (routing ? '规划中…' : '开始规划')}}</button>
+  </view>
+</view>

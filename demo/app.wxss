@@ -1,3 +1,383 @@
-text {
-    line-height: 25px;
+/** 全局样式与通用组件（各页面优先复用这里定义的类，保持视觉统一） */
+page {
+  background-color: #f2f2f7;
+  color: #1f2933;
+  font-size: 28rpx;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* ---------- 布局 ---------- */
+.page {
+  padding: 24rpx 24rpx 48rpx;
+}
+
+/* ---------- 卡片 ---------- */
+.card {
+  margin-bottom: 24rpx;
+  padding: 28rpx;
+  background-color: #fff;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(31, 41, 51, 0.05);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.card-title::before {
+  content: '';
+  width: 8rpx;
+  height: 30rpx;
+  margin-right: 14rpx;
+  background: linear-gradient(180deg, #4db900, #7ed321);
+  border-radius: 4rpx;
+}
+
+/* ---------- 表单 ---------- */
+.field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.field-label {
+  width: 100rpx;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: #8a8f99;
+}
+
+.field-input {
+  flex: 1;
+  height: 76rpx;
+  padding: 0 24rpx;
+  margin-left: 20rpx;
+  box-sizing: border-box;
+  background-color: #f4f5f8;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  color: #1f2933;
+}
+
+.field-placeholder {
+  color: #b9bec7;
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0;
+  border-radius: 999rpx;
+  font-size: 29rpx;
+  font-weight: 600;
+}
+
+.btn::after {
+  border: none;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 24rpx;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4db900, #6fce1e);
+  color: #fff;
+  box-shadow: 0 8rpx 20rpx rgba(77, 185, 0, 0.25);
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+.btn-outline {
+  background: #fff;
+  border: 2rpx solid #d8dce3;
+  color: #1f2933;
+}
+
+/* ---------- 地图 ---------- */
+.map-wrap {
+  position: relative;
+  height: 720rpx;
+  margin-bottom: 24rpx;
+  background-color: #e8eaf0;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(31, 41, 51, 0.06);
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+/* 地图悬浮加载胶囊：绝对定位不占文档流，避免内容跳跃/闪烁 */
+.map-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  padding: 16rpx 30rpx;
+  background: rgba(31, 41, 51, 0.82);
+  border-radius: 999rpx;
+  color: #fff;
+  font-size: 24rpx;
+}
+
+.map-loading .spinner {
+  border-color: rgba(255, 255, 255, 0.25);
+  border-top-color: #9be15d;
+}
+
+/* ---------- 信息行 ---------- */
+.info-row {
+  display: flex;
+  padding: 12rpx 0;
+  font-size: 26rpx;
+}
+
+.info-label {
+  width: 110rpx;
+  flex-shrink: 0;
+  color: #8a8f99;
+}
+
+.info-value {
+  flex: 1;
+  color: #1f2933;
+  line-height: 38rpx;
+  word-break: break-all;
+}
+
+/* 结果地址行（地理编码 / 逆地理编码共用） */
+.rs-addr {
+  display: flex;
+  padding: 8rpx 0 20rpx;
+  margin-bottom: 12rpx;
+  border-bottom: 2rpx solid #f4f5f8;
+  font-size: 25rpx;
+}
+
+.rs-addr-label {
+  width: 100rpx;
+  flex-shrink: 0;
+  color: #8a8f99;
+}
+
+.rs-addr-value {
+  flex: 1;
+  color: #1f2933;
+  line-height: 36rpx;
+  word-break: break-all;
+}
+
+/* ---------- 状态 ---------- */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36rpx 0;
+  color: #8a8f99;
+  font-size: 26rpx;
+}
+
+.spinner {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 16rpx;
+  border: 4rpx solid #d8eecd;
+  border-top-color: #4db900;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  background-color: #fff2f2;
+  border: 2rpx solid #ffd9d9;
+  border-radius: 16rpx;
+  color: #d0021b;
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 0;
+  color: #b9bec7;
+  font-size: 26rpx;
+}
+
+/* ---------- 天气主题背景（主页 Hero / 天气页共用；.hero.theme-* 保证覆盖页面级 .hero 默认背景） ---------- */
+.hero.theme-sunny {
+  background: linear-gradient(135deg, #3a7bd5, #5da9e9);
+}
+
+.hero.theme-cloudy {
+  background: linear-gradient(135deg, #5c6b7a, #8a97a5);
+}
+
+.hero.theme-rain {
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+}
+
+.hero.theme-snow {
+  background: linear-gradient(135deg, #5d7a99, #8fb5d9);
+}
+
+.hero.theme-fog {
+  background: linear-gradient(135deg, #6b7280, #9ca3af);
+}
+
+.hero.theme-default {
+  background: linear-gradient(135deg, #2f7d32, #4db900);
+}
+
+/* ---------- CSS 天气插画（主页 Hero / 天气页共用，无图片资源） ---------- */
+.illu {
+  position: relative;
+  width: 220rpx;
+  height: 170rpx;
+  flex-shrink: 0;
+}
+
+.illu-sun {
+  position: absolute;
+  right: 20rpx;
+  top: 6rpx;
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3c4, #ffd76e 55%, #ffb02e);
+  box-shadow: 0 0 32rpx rgba(255, 210, 110, 0.55);
+  opacity: 0;
+  animation: sun-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes sun-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.illu-cloud {
+  position: absolute;
+  left: 8rpx;
+  bottom: 26rpx;
+  width: 128rpx;
+  height: 46rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.94);
+  opacity: 0.95;
+}
+
+.illu-cloud::before,
+.illu-cloud::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.illu-cloud::before {
+  width: 56rpx;
+  height: 56rpx;
+  left: 20rpx;
+  top: -26rpx;
+}
+
+.illu-cloud::after {
+  width: 38rpx;
+  height: 38rpx;
+  right: 18rpx;
+  top: -18rpx;
+}
+
+.illu-drops,
+.illu-snow {
+  position: absolute;
+  left: 30rpx;
+  bottom: -22rpx;
+  display: none;
+}
+
+.drop {
+  position: absolute;
+  width: 6rpx;
+  height: 20rpx;
+  border-radius: 3rpx;
+  background: rgba(255, 255, 255, 0.92);
+  animation: drop-fall 1s linear infinite;
+}
+
+.d1 { left: 0; }
+.d2 { left: 40rpx; animation-delay: 0.3s; }
+.d3 { left: 84rpx; animation-delay: 0.6s; }
+
+@keyframes drop-fall {
+  0% { transform: translateY(-8rpx); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(26rpx); opacity: 0; }
+}
+
+.flake {
+  position: absolute;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: #fff;
+  animation: flake-fall 1.8s linear infinite;
+}
+
+.f1 { left: 6rpx; }
+.f2 { left: 46rpx; animation-delay: 0.5s; }
+.f3 { left: 90rpx; animation-delay: 1s; }
+
+@keyframes flake-fall {
+  0% { transform: translateY(-10rpx) translateX(0); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(28rpx) translateX(10rpx); opacity: 0; }
+}
+
+/* 按天气主题显隐插画元素 */
+.theme-sunny .illu-sun { opacity: 1; }
+.theme-sunny .illu-cloud { opacity: 0.9; transform: scale(0.75) translate(-36rpx, 34rpx); }
+
+.theme-cloudy .illu-sun { opacity: 0.3; }
+.theme-cloudy .illu-cloud { opacity: 1; }
+
+.theme-rain .illu-sun { opacity: 0; }
+.theme-rain .illu-cloud { opacity: 0.88; }
+.theme-rain .illu-drops { display: block; }
+
+.theme-snow .illu-sun { opacity: 0; }
+.theme-snow .illu-cloud { opacity: 0.9; }
+.theme-snow .illu-snow { display: block; }
+
+.theme-fog .illu-sun { opacity: 0.2; }
+.theme-fog .illu-cloud { opacity: 0.7; }
+
+.theme-default .illu-sun { opacity: 1; }
+.theme-default .illu-cloud { opacity: 0.9; transform: scale(0.8) translate(-30rpx, 30rpx); }

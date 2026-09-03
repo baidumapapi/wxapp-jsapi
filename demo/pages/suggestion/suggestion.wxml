@@ -1,6 +1,33 @@
-<view class="section">
-  <input placeholder="输入关键字"  type="text" bindinput="bindKeyInput"/>
-</view>
-<view class="sug_info">
-  <text>{{sugData}}</text>
+<view class="page">
+  <view class="search-box">
+    <view class="search-icon" />
+    <input
+      class="search-input"
+      placeholder="输入关键字，如：天安门"
+      placeholder-class="search-placeholder"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindinput="onKeywordInput"
+    />
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <view class="spinner" />
+    <text>搜索中…</text>
+  </view>
+
+  <view class="card sug-card" wx:if="{{suggestions.length}}">
+    <view class="sug-item" wx:for="{{suggestions}}" wx:key="name" hover-class="sug-hover">
+      <view class="sug-badge">{{index + 1}}</view>
+      <view class="sug-body">
+        <view class="sug-name">{{item.name}}</view>
+        <view class="sug-address" wx:if="{{item.city || item.address}}">{{item.city}}{{item.district}}{{item.address}}</view>
+      </view>
+      <view class="sug-city" wx:if="{{item.city}}">{{item.city}}</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !error && !suggestions.length}}">输入关键字，开始地点联想</view>
+
+  <view class="error" wx:if="{{error}}">{{error}}</view>
 </view>

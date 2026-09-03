@@ -1,0 +1,33 @@
+{
+  "name": "wxapp-jsapi",
+  "version": "1.2.0",
+  "description": "百度地图微信小程序 JS API（bmap-wx）：对百度地图 Web 服务 API 进行小程序规范封装",
+  "main": "src/bmap-wx.js",
+  "types": "index.d.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "watch": "node scripts/build.js --watch",
+    "test": "node scripts/smoke.js"
+  },
+  "keywords": [
+    "baidu",
+    "map",
+    "bmap",
+    "wechat",
+    "miniprogram",
+    "wxapp"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "babel-plugin-transform-async-to-promises": "^0.8.18",
+    "chokidar": "^4.0.0",
+    "terser": "^5.50.0"
+  }
+}

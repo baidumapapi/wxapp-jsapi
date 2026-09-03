@@ -1,13 +1,196 @@
-.map_container{
-    height: 450px;
-    width: 100%;
+.map-wrap {
+  height: 520rpx;
 }
 
-.map {
-    height: 100%;
-    width: 100%;
+/* ============ 搜索框 ============ */
+.search-box {
+  position: relative;
+  height: 84rpx;
+  margin-bottom: 20rpx;
 }
 
-.place_info {
-    padding: 0 5px;
+.search-icon {
+  position: absolute;
+  left: 30rpx;
+  top: 29rpx;
+  width: 26rpx;
+  height: 26rpx;
+  border: 4rpx solid #b9bec7;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.search-icon::after {
+  content: '';
+  position: absolute;
+  right: -10rpx;
+  bottom: -6rpx;
+  width: 12rpx;
+  height: 4rpx;
+  background-color: #b9bec7;
+  border-radius: 2rpx;
+  transform: rotate(45deg);
+}
+
+.search-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 0 140rpx 0 76rpx;
+  background-color: #fff;
+  border: 2rpx solid transparent;
+  border-radius: 999rpx;
+  box-shadow: 0 4rpx 20rpx rgba(31, 41, 51, 0.05);
+  font-size: 27rpx;
+}
+
+.search-placeholder {
+  color: #b9bec7;
+}
+
+.search-btn {
+  position: absolute;
+  right: 8rpx;
+  top: 8rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  padding: 0 32rpx;
+  background: linear-gradient(135deg, #4db900, #6fce1e);
+  border-radius: 999rpx;
+  color: #fff;
+  font-size: 25rpx;
+  font-weight: 600;
+}
+
+/* ============ 场景快选 ============ */
+.scene-bar {
+  display: flex;
+  margin-bottom: 20rpx;
+}
+
+.scene-chip {
+  padding: 12rpx 30rpx;
+  margin-right: 14rpx;
+  background: #fff;
+  border: 2rpx solid #e8ebef;
+  border-radius: 999rpx;
+  color: #6b7280;
+  font-size: 24rpx;
+  transition: all 0.15s ease;
+}
+
+.scene-chip:last-child {
+  margin-right: 0;
+}
+
+.scene-active {
+  background: linear-gradient(135deg, #4db900, #6fce1e);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 6rpx 16rpx rgba(77, 185, 0, 0.3);
+}
+
+/* ============ 选中详情 ============ */
+.detail-card {
+  margin-bottom: 20rpx;
+}
+
+.dc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.dc-title {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2933;
+}
+
+.dc-dist {
+  margin-left: 16rpx;
+  padding: 6rpx 18rpx;
+  background: #eef7e4;
+  border-radius: 999rpx;
+  color: #4d7c0f;
+  font-size: 22rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ============ 结果列表 ============ */
+.poi-card {
+  padding: 8rpx 28rpx;
+}
+
+.poi-item {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 0;
+  border-bottom: 2rpx solid #f4f5f8;
+}
+
+.poi-item:last-child {
+  border-bottom: none;
+}
+
+.poi-hover {
+  opacity: 0.7;
+}
+
+.poi-active {
+  background: linear-gradient(90deg, rgba(77, 185, 0, 0.06), transparent);
+}
+
+.poi-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 18rpx;
+  background: #eef7e4;
+  border-radius: 12rpx;
+  color: #4db900;
+  font-size: 21rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.poi-active .poi-badge {
+  background: linear-gradient(135deg, #4db900, #6fce1e);
+  color: #fff;
+}
+
+.poi-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.poi-title {
+  font-size: 27rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.poi-addr {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #8a8f99;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.poi-dist {
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: #4db900;
+  font-weight: 600;
+  flex-shrink: 0;
+  font-family: 'DIN Alternate', 'Helvetica Neue', sans-serif;
 }

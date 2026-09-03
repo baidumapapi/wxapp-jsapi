@@ -1,0 +1,122 @@
+<view class="page">
+  <!-- ============ 取景地图：拖动/缩放决定生成中心 ============ -->
+  <view class="map-wrap">
+    <map
+      id="staticmap-map"
+      class="map"
+      longitude="{{mapLng}}"
+      latitude="{{mapLat}}"
+      scale="{{mapZoom}}"
+      show-location
+      bindregionchange="onMapRegionChange"
+      bindtouchend="onMapTouchEnd"
+    />
+  </view>
+
+  <!-- ============ 参数 ============ -->
+  <view class="card">
+    <view class="card-title">静态图参数</view>
+
+    <view class="sm-row">
+      <text class="sm-label">中心点</text>
+      <text class="sm-value">{{centerLng}},&nbsp;{{centerLat}}</text>
+      <text class="sm-hint">拖动地图更新</text>
+    </view>
+
+    <view class="sm-row">
+      <text class="sm-label">缩放级别</text>
+      <text class="sm-value">{{zoom}} 级</text>
+      <text class="sm-hint">（3-19，拖动地图更新）</text>
+    </view>
+
+    <view class="sm-row">
+      <text class="sm-label">标注文字</text>
+      <input class="field-input sm-input" value="{{labelText}}"
+             placeholder="如：我的位置" placeholder-class="field-placeholder"
+             bindinput="onLabelInput" />
+    </view>
+
+    <view class="sm-row">
+      <text class="sm-label">清晰度</text>
+      <view class="segment sm-segment">
+        <view class="segment-item {{scale === 1 ? 'segment-item-active' : ''}}"
+              data-scale="1" bindtap="onScaleTap">普通</view>
+        <view class="segment-item {{scale === 2 ? 'segment-item-active' : ''}}"
+              data-scale="2" bindtap="onScaleTap">高清 2x</view>
+      </view>
+    </view>
+
+    <view class="sm-row">
+      <text class="sm-label">尺寸</text>
+      <input class="sm-size-input" type="number" value="{{width}}" bindinput="onWidthInput" />
+      <text class="sm-x">×</text>
+      <input class="sm-size-input" type="number" value="{{height}}" bindinput="onHeightInput" />
+      <text class="sm-hint">（高清时自动 ≤512）</text>
+    </view>
+
+    <view class="sm-advanced" bindtap="toggleAdvanced">{{showAdvanced ? '收起高级参数 ▴' : '高级参数 ▾'}}</view>
+
+    <view class="sm-adv-panel" wx:if="{{showAdvanced}}">
+      <view class="sm-row">
+        <text class="sm-label">标注点</text>
+        <input class="field-input sm-input" value="{{markers}}"
+               placeholder="lng,lat|lng2,lat2" placeholder-class="field-placeholder"
+               bindinput="onMarkersInput" />
+      </view>
+      <view class="sm-row">
+        <text class="sm-label">标注样式</text>
+        <input class="field-input sm-input" value="{{markerStyles}}"
+               placeholder="size,label,color 如 16,北京,0xFF6600｜多组用 | 分隔" placeholder-class="field-placeholder"
+               bindinput="onMarkerStylesInput" />
+      </view>
+      <view class="sm-row">
+        <text class="sm-label">折线</text>
+        <input class="field-input sm-input" value="{{paths}}"
+               placeholder="lng,lat;lng2,lat2|..." placeholder-class="field-placeholder"
+               bindinput="onPathsInput" />
+      </view>
+      <view class="sm-row">
+        <text class="sm-label">折线样式</text>
+        <input class="field-input sm-input" value="{{pathStyles}}"
+               placeholder="color,weight,opacity 如 0xFF0000,5,0.8" placeholder-class="field-placeholder"
+               bindinput="onPathStylesInput" />
+      </view>
+      <view class="sm-row">
+        <text class="sm-label">坐标类型</text>
+        <view class="segment sm-segment">
+          <view class="segment-item {{coordtype === 'gcj02ll' ? 'segment-item-active' : ''}}" data-value="gcj02ll" bindtap="onCoordtypeTap">gcj02ll</view>
+          <view class="segment-item {{coordtype === 'bd09ll' ? 'segment-item-active' : ''}}" data-value="bd09ll" bindtap="onCoordtypeTap">bd09ll</view>
+          <view class="segment-item {{coordtype === 'wgs84ll' ? 'segment-item-active' : ''}}" data-value="wgs84ll" bindtap="onCoordtypeTap">wgs84ll</view>
+        </view>
+      </view>
+      <view class="sm-row">
+        <text class="sm-label">屏幕类型</text>
+        <view class="segment sm-segment">
+          <view class="segment-item {{dpiType === 'ph' ? 'segment-item-active' : ''}}" data-value="ph" bindtap="onDpiTap">ph 高清屏</view>
+          <view class="segment-item {{dpiType === 'pl' ? 'segment-item-active' : ''}}" data-value="pl" bindtap="onDpiTap">pl 低分屏</view>
+        </view>
+      </view>
+      <view class="sm-row">
+        <text class="sm-label">版权样式</text>
+        <view class="segment sm-segment">
+          <view class="segment-item {{copyright === 0 ? 'segment-item-active' : ''}}" data-value="0" bindtap="onCopyrightTap">log+文字</view>
+          <view class="segment-item {{copyright === 1 ? 'segment-item-active' : ''}}" data-value="1" bindtap="onCopyrightTap">纯文字</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="sm-tip">先在上方地图拖动或缩放取景，再点击生成</view>
+    <button class="btn btn-primary btn-block" loading="{{loading}}" bindtap="generate">生成静态图</button>
+  </view>
+
+  <!-- ============ 结果 ============ -->
+  <view class="card" wx:if="{{mapUrl}}">
+    <view class="card-title">生成结果（点击预览，长按保存）</view>
+    <image class="map-img" src="{{mapUrl}}" mode="widthFix" bindtap="preview" binderror="onImgError" />
+    <view class="sm-meta">缩放 {{zoom}} 级 · {{scale === 2 ? '高清 ' + width + '×' + height : '标准 ' + width + '×' + height}} · 标注「{{labelText || '中心点'}}」</view>
+    <view class="sm-url" bindtap="copyUrl">{{mapUrl}}</view>
+  </view>
+
+  <view class="error" wx:if="{{imgError}}">{{imgError}}</view>
+  <view class="error" wx:if="{{error}}">{{error}}</view>
+</view>

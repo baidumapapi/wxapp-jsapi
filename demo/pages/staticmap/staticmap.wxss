@@ -1,0 +1,120 @@
+/* ============ 参数行 ============ */
+.sm-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.sm-label {
+  width: 140rpx;
+  font-size: 26rpx;
+  color: #8a8f99;
+  flex-shrink: 0;
+}
+
+.sm-input {
+  margin-left: 0;
+}
+
+.sm-value {
+  font-size: 24rpx;
+  color: #1f2933;
+  word-break: break-all;
+}
+
+.sm-hint {
+  margin-left: 10rpx;
+  font-size: 20rpx;
+  color: #b9bec7;
+}
+
+.sm-size-input {
+  width: 140rpx;
+  height: 64rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  background: #f4f5f8;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+}
+
+.sm-x {
+  margin: 0 14rpx;
+  color: #b9bec7;
+}
+
+.sm-segment {
+  flex: 1;
+  display: flex;
+  padding: 6rpx;
+  background: #eef0f4;
+  border-radius: 18rpx;
+}
+
+.sm-segment .segment-item {
+  flex: 1;
+  font-size: 23rpx;
+  padding: 12rpx 0;
+}
+
+/* 高级参数折叠 */
+.sm-advanced {
+  margin: 8rpx 0 20rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #4db900;
+  font-weight: 600;
+}
+
+.sm-adv-panel {
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f4f5f8;
+}
+
+.sm-tip {
+  margin-bottom: 20rpx;
+  font-size: 22rpx;
+  color: #b9bec7;
+}
+
+/* ============ 结果 ============ */
+.map-img {
+  width: 100%;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(31, 41, 51, 0.08);
+}
+
+.sm-meta {
+  margin-top: 16rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #8a8f99;
+}
+
+.sm-url {
+  margin-top: 12rpx;
+  padding: 14rpx 18rpx;
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  font-size: 19rpx;
+  color: #6b7280;
+  word-break: break-all;
+  line-height: 28rpx;
+}
+
+/* segment（与路线页同款） */
+.segment-item {
+  padding: 14rpx 0;
+  text-align: center;
+  border-radius: 14rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+  transition: all 0.2s ease;
+}
+
+.segment-item-active {
+  background: #fff;
+  color: #4db900;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(31, 41, 51, 0.1);
+}

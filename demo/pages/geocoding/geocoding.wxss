@@ -1,17 +1,33 @@
-.map_container{
-  height: 420px;
-  width: 100%;
+.geocoding-input {
+  margin-left: 0;
 }
 
-.map {
-  height: 100%;
-  width: 100%;
+/* ---------- 解析结果（rs-addr 系列见 app.wxss） ---------- */
+.rs-coords {
+  display: flex;
+  margin-bottom: 24rpx;
 }
 
-.rgc_info {
-  padding: 5px 5px;
+.rs-item {
+  flex: 1;
 }
 
-.rgc_info text{
-  display: block;
+.rs-item + .rs-item {
+  margin-left: 16rpx;
+  padding-left: 32rpx;
+  border-left: 2rpx solid #f0f1f5;
+}
+
+.rs-label {
+  font-size: 22rpx;
+  color: #8a8f99;
+}
+
+.rs-value {
+  margin-top: 8rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #4db900;
+  letter-spacing: 1rpx;
+  font-family: 'DIN Alternate', 'Helvetica Neue', sans-serif;
 }

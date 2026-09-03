@@ -1,13 +1,69 @@
-.map_container{
-    height: 450px;
-    width: 100%;
+/* ---------- 操作按钮行 ---------- */
+.btn-row {
+  display: flex;
+  margin-top: 24rpx;
 }
 
-.map {
-    height: 100%;
-    width: 100%;
+.btn-flex {
+  flex: 1;
 }
 
-.rgc_info {
-    padding: 0 5px;
+.btn-row .btn:first-child {
+  margin-right: 20rpx;
+}
+
+/* ---------- 周边 POI 列表 ---------- */
+.poi-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid #f4f5f8;
+}
+
+.poi-item:last-child {
+  border-bottom: none;
+}
+
+.poi-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 18rpx;
+  background: #eef7e4;
+  border-radius: 12rpx;
+  color: #4db900;
+  font-size: 21rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.poi-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.poi-title {
+  font-size: 27rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.poi-addr {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #8a8f99;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.poi-dist {
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: #4db900;
+  font-weight: 600;
+  flex-shrink: 0;
+  font-family: 'DIN Alternate', 'Helvetica Neue', sans-serif;
 }

@@ -1,8 +1,51 @@
-<view class="map_container">
-  <map class="map" id="map" longitude="{{longitude}}" latitude="{{latitude}}" scale="14" show-location="true" markers="{{markers}}" bindmarkertap="makertap"></map>
-</view>
-<view class="rgc_info">
-  <text>{{rgcData.address}}</text>
-  <text>{{rgcData.desc}}</text>
-  <text>{{rgcData.business}}</text>
+<view class="page">
+  <view class="map-wrap">
+    <map
+      class="map"
+      longitude="{{longitude}}"
+      latitude="{{latitude}}"
+      scale="14"
+      show-location
+      markers="{{markers}}"
+      bindmarkertap="onMarkerTap"
+    />
+
+    <view class="map-loading" wx:if="{{loading}}">
+      <view class="spinner" />
+      <text>正在解析当前位置…</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{address}}">
+    <view class="card-title">当前位置</view>
+
+    <view class="rs-addr">
+      <text class="rs-addr-label">地址</text>
+      <text class="rs-addr-value">{{address}}</text>
+    </view>
+
+    <view class="info-row" wx:for="{{infoData}}" wx:key="label">
+      <text class="info-label">{{item.label}}</text>
+      <text class="info-value">{{item.value}}</text>
+    </view>
+
+    <view class="btn-row">
+      <button class="btn btn-outline btn-flex" bindtap="copyAddress">复制地址</button>
+      <button class="btn btn-primary btn-flex" loading="{{loading}}" bindtap="locate">重新定位</button>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{pois.length}}">
+    <view class="card-title">附近的</view>
+    <view class="poi-item" wx:for="{{pois}}" wx:key="uid">
+      <view class="poi-badge">{{index + 1}}</view>
+      <view class="poi-body">
+        <view class="poi-title">{{item.name}}</view>
+        <view class="poi-addr" wx:if="{{item.addr}}">{{item.addr}}</view>
+      </view>
+      <text class="poi-dist" wx:if="{{item.distText}}">{{item.distText}}</text>
+    </view>
+  </view>
+
+  <view class="error" wx:if="{{error}}">{{error}}</view>
 </view>

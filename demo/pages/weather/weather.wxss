@@ -1,13 +1,201 @@
-.weather{
-    width: 100%;
-    text-align: center;
-    line-height: 40px;
-    padding-top: 150px;
-    color: #fff;
-    font-weight: 600;
-    height: 100%;
+/* ---------- 天气主卡：渐变态由 app.wxss 的 .hero.theme-* 提供，插画样式见 app.wxss ---------- */
+.hero {
+  padding: 44rpx 36rpx 36rpx;
+  margin-bottom: 24rpx;
+  border-radius: 28rpx;
+  color: #fff;
+  box-shadow: 0 12rpx 32rpx rgba(31, 41, 51, 0.18);
 }
 
-page {
-    background-color: #27AE60;
+.hero-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.hero-city {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.hero-district {
+  font-size: 26rpx;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-date {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.hero-main {
+  display: flex;
+  align-items: center;
+  margin-top: 32rpx;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero-temp {
+  font-size: 136rpx;
+  font-weight: 700;
+  line-height: 1;
+  font-family: 'DIN Alternate', 'Helvetica Neue', sans-serif;
+}
+
+.hero-unit {
+  font-size: 52rpx;
+  font-weight: 400;
+  margin-left: 8rpx;
+}
+
+.hero-desc {
+  margin-top: 16rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.hero-feels {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.hero-update {
+  margin-top: 32rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- 城市快捷切换 chips ---------- */
+.wcity-scroll {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 24rpx;
+}
+
+.wcity-chip {
+  display: inline-block;
+  padding: 12rpx 30rpx;
+  margin-right: 16rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+  background: #f2f3f7;
+  border-radius: 999rpx;
+  transition: all 0.2s ease;
+}
+
+.wcity-chip:last-child {
+  margin-right: 0;
+}
+
+.wcity-active {
+  color: #fff;
+  background: #4db900;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(77, 185, 0, 0.35);
+}
+
+/* ---------- 7 天预报横滑条 ---------- */
+.fc-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.fc-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 132rpx;
+  padding: 20rpx 0;
+  margin-right: 12rpx;
+  background: #f7f8fa;
+  border-radius: 20rpx;
+}
+
+.fc-item:last-child {
+  margin-right: 0;
+}
+
+.fc-week {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.fc-today {
+  color: #4db900;
+  font-weight: 600;
+}
+
+.fc-icon {
+  width: 52rpx;
+  height: 52rpx;
+  margin: 10rpx 0 6rpx;
+}
+
+.fc-text {
+  font-size: 22rpx;
+  color: #8a8f99;
+}
+
+.fc-temp {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #1f2933;
+}
+
+.fc-low {
+  font-size: 22rpx;
+  font-weight: 400;
+  color: #b9bec7;
+}
+
+/* ---------- 数据宫格 ---------- */
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 8rpx;
+}
+
+.stat {
+  width: 33.33%;
+  padding: 22rpx 0;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1f2933;
+  font-family: 'DIN Alternate', 'Helvetica Neue', sans-serif;
+}
+
+.stat-label {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #8a8f99;
+}
+
+/* AQI 等级配色 */
+.aqi-good { color: #4db900 !important; }
+.aqi-ok { color: #a8b400 !important; }
+.aqi-mild { color: #f5a623 !important; }
+.aqi-bad { color: #f05b4b !important; }
+.aqi-worse { color: #b3548f !important; }
+.aqi-worst { color: #7f1d2d !important; }
+
+/* ---------- 空态 ---------- */
+.weather-empty {
+  padding: 40rpx 28rpx 44rpx;
+  text-align: center;
+}
+
+.weather-empty-text {
+  padding: 20rpx 0 8rpx;
+  color: #b9bec7;
+  font-size: 26rpx;
 }

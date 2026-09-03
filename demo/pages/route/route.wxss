@@ -1,0 +1,212 @@
+.segment {
+  display: flex;
+  padding: 6rpx;
+  margin-bottom: 28rpx;
+  background: #eef0f4;
+  border-radius: 20rpx;
+}
+
+.segment-item {
+  flex: 1;
+  padding: 14rpx 0;
+  text-align: center;
+  border-radius: 14rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+  transition: all 0.2s ease;
+}
+
+.segment-item-active {
+  background: #fff;
+  color: #4db900;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(31, 41, 51, 0.1);
+}
+
+/* ---------- 交换按钮 ---------- */
+.swap-btn {
+  margin-left: 14rpx;
+  padding: 10rpx 22rpx;
+  background: #eef7e4;
+  border-radius: 999rpx;
+  color: #4d7c0f;
+  font-size: 22rpx;
+  flex-shrink: 0;
+}
+
+/* ---------- 地图 ---------- */
+.map-route {
+  height: 620rpx;
+}
+
+/* ---------- 路线摘要 ---------- */
+.route-od {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: #8a8f99;
+  word-break: break-all;
+}
+
+.route-arrow {
+  margin: 0 14rpx;
+  color: #4db900;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ---------- 多方案切换 ---------- */
+.plan-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20rpx;
+}
+
+.plan-tab {
+  padding: 10rpx 26rpx;
+  margin-right: 14rpx;
+  margin-bottom: 10rpx;
+  background: #f4f5f8;
+  border: 2rpx solid transparent;
+  border-radius: 999rpx;
+  color: #6b7280;
+  font-size: 23rpx;
+}
+
+.plan-tab-active {
+  background: #eef7e4;
+  border-color: #b5df8a;
+  color: #4d7c0f;
+  font-weight: 600;
+}
+
+.sum-row {
+  display: flex;
+  align-items: center;
+}
+
+.sum-item {
+  flex: 1;
+  text-align: center;
+}
+
+.sum-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1f2933;
+  font-family: 'DIN Alternate', 'Helvetica Neue', sans-serif;
+}
+
+.sum-label {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #8a8f99;
+}
+
+.sum-divider {
+  width: 2rpx;
+  height: 56rpx;
+  background: #f0f1f5;
+}
+
+/* ---------- 附加信息（打车费/票价等） ---------- */
+.sum-extras {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f4f5f8;
+}
+
+.sum-extra {
+  display: flex;
+  align-items: center;
+  margin-right: 16rpx;
+  padding: 8rpx 20rpx;
+  background: #f7f8fa;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+}
+
+.sum-extra-label {
+  color: #8a8f99;
+}
+
+.sum-extra-value {
+  margin-left: 8rpx;
+  color: #1f2933;
+  font-weight: 600;
+}
+
+/* ---------- 行程预览 ---------- */
+.sum-steps {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f4f5f8;
+}
+
+.sum-steps-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.sum-steps-title {
+  font-size: 23rpx;
+  color: #8a8f99;
+}
+
+.sum-steps-more {
+  font-size: 22rpx;
+  color: #4db900;
+  font-weight: 600;
+}
+
+.sum-step {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+}
+
+.step-dot {
+  width: 12rpx;
+  height: 12rpx;
+  margin-right: 16rpx;
+  background: #4db900;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.step-badge {
+  min-width: 56rpx;
+  padding: 4rpx 14rpx;
+  margin-right: 16rpx;
+  background: #eef7e4;
+  border: 2rpx solid #d3edb8;
+  border-radius: 10rpx;
+  color: #4d7c0f;
+  font-size: 20rpx;
+  font-weight: 600;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.step-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: #1f2933;
+  line-height: 34rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.step-dist {
+  margin-left: 16rpx;
+  font-size: 21rpx;
+  color: #8a8f99;
+  flex-shrink: 0;
+  font-family: 'DIN Alternate', 'Helvetica Neue', sans-serif;
+}

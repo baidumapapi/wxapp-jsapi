@@ -1,0 +1,95 @@
+<view class="page">
+  <view class="card">
+    <view class="card-title">路线规划</view>
+
+    <view class="segment">
+      <view
+        class="segment-item {{activeMode === item.key ? 'segment-item-active' : ''}}"
+        wx:for="{{modes}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onModeTap"
+      >{{item.label}}</view>
+    </view>
+
+    <view class="field">
+      <text class="field-label">起点</text>
+      <input class="field-input" value="{{origin}}" placeholder="纬度,经度 或地点名" placeholder-class="field-placeholder" bindinput="onOriginInput" />
+      <view class="swap-btn" bindtap="swapEndpoints">交换</view>
+    </view>
+    <view class="field">
+      <text class="field-label">终点</text>
+      <input class="field-input" value="{{destination}}" placeholder="纬度,经度 或地点名" placeholder-class="field-placeholder" bindinput="onDestinationInput" />
+    </view>
+
+    <button class="btn btn-primary btn-block" loading="{{loading}}" bindtap="planRoute">规划路线</button>
+  </view>
+
+  <view class="map-wrap map-route">
+    <map
+      class="map"
+      longitude="{{longitude}}"
+      latitude="{{latitude}}"
+      scale="12"
+      markers="{{markers}}"
+      polyline="{{polyline}}"
+      include-points="{{routePoints}}"
+    />
+
+    <view class="map-loading" wx:if="{{loading}}">
+      <view class="spinner" />
+      <text>正在规划…</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{sumDistance}}">
+    <view class="route-od">{{planOrigin}}<text class="route-arrow">›</text>{{planDestination}}</view>
+
+    <view class="plan-tabs" wx:if="{{plans.length > 1}}">
+      <view class="plan-tab {{activePlan === index ? 'plan-tab-active' : ''}}"
+            wx:for="{{plans}}" wx:key="key"
+            data-index="{{index}}" bindtap="onPlanTap">{{item.label}}</view>
+    </view>
+
+    <view class="sum-row">
+      <view class="sum-item">
+        <view class="sum-value">{{sumDistance}}</view>
+        <view class="sum-label">距离</view>
+      </view>
+      <view class="sum-divider" />
+      <view class="sum-item">
+        <view class="sum-value">{{sumDuration}}</view>
+        <view class="sum-label">预计耗时</view>
+      </view>
+      <view class="sum-divider" />
+      <view class="sum-item">
+        <view class="sum-value">{{sumRoutes}}</view>
+        <view class="sum-label">方案</view>
+      </view>
+    </view>
+
+    <view class="sum-extras" wx:if="{{extras.length}}">
+      <view class="sum-extra" wx:for="{{extras}}" wx:key="label">
+        <text class="sum-extra-label">{{item.label}}</text>
+        <text class="sum-extra-value">{{item.value}}</text>
+      </view>
+    </view>
+
+    <view class="sum-steps" wx:if="{{stepPrev.length}}">
+      <view class="sum-steps-head">
+        <view class="sum-steps-title">行程预览</view>
+        <view class="sum-steps-more" wx:if="{{stepAll.length > 3}}" bindtap="toggleSteps">{{stepsExpanded ? '收起' : '展开全部 ' + stepAll.length + ' 步'}}</view>
+      </view>
+      <view class="sum-step" wx:for="{{stepPrev}}" wx:key="i">
+        <view class="step-badge" wx:if="{{item.turn}}">{{item.turn}}</view>
+        <view class="step-dot" wx:else />
+        <view class="step-text">{{item.text}}</view>
+        <text class="step-dist" wx:if="{{item.dist != null}}">{{item.dist}}m</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !sumDistance && !error}}">输入起终点后点击「规划路线」，路线将绘制在地图上</view>
+
+  <view class="error" wx:if="{{error}}">{{error}}</view>
+</view>

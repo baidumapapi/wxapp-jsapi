@@ -1,69 +1,110 @@
-var bmap = require('../../libs/bmap-wx.min.js');
-var wxMarkerData = [];
+const {
+  invoke,
+  errMsg,
+  RED_ICON,
+  markerIconPatch,
+  distanceKm,
+  distText,
+} = require('../../utils/bmap');
+
+const SCENES = ['美食', '酒店', '景点', '咖啡', '公园'];
+
 Page({
-    data: {
-        markers: [],
-        latitude: '',
-        longitude: '',
-        placeData: {}
-    },
-    makertap: function(e) {
-        var that = this;
-        var id = e.markerId;
-        that.showSearchInfo(wxMarkerData, id);
-        that.changeMarkerColor(wxMarkerData, id);
-    },
-    onLoad: function() {
-        var that = this;
-        var BMap = new bmap.BMapWX({
-            ak: '您的ak'
-        });
-        var fail = function(data) {
-            console.log(data)
+  data: {
+    /* 搜索 */
+    keyword: '美食',
+    scenes: SCENES,
+    activeScene: '美食',
+    /* 地图 */
+    latitude: 39.915,
+    longitude: 116.404,
+    markers: [],
+    /* 结果 */
+    pois: [], // [{ id, title, address, telephone, distText }]
+    selectedId: -1,
+    detail: null, // { title, distText, rows: [{label,value}] }
+    loading: true,
+    error: '',
+  },
+
+  onLoad() {
+    this.searchAround('美食');
+  },
+
+  onKeywordInput(e) {
+    this.setData({ keyword: e.detail.value });
+  },
+
+  confirmSearch() {
+    const q = (this.data.keyword || '').trim();
+    if (q) { this.searchAround(q); }
+  },
+
+  /** 场景快选 */
+  onSceneTap(e) {
+    const scene = e.currentTarget.dataset.scene;
+    this.setData({ keyword: scene, activeScene: scene });
+    this.searchAround(scene);
+  },
+
+  /** 关键词周边检索（以当前位置为圆心） */
+  async searchAround(query) {
+    const q = (query || '').trim() || '美食';
+    this.setData({
+      loading: true,
+      error: '',
+      activeScene: this.data.scenes.indexOf(q) >= 0 ? q : '',
+    });
+    try {
+      const { wxMarkerData } = await invoke('search', {
+        query: q,
+        location: `${this.data.latitude},${this.data.longitude}`,
+        iconPath: RED_ICON,
+        iconTapPath: RED_ICON,
+      });
+      const pois = (wxMarkerData || []).map((m, i) => {
+        const dist = distanceKm(this.data.latitude, this.data.longitude, m.latitude, m.longitude);
+        return {
+          id: i,
+          title: m.title,
+          address: m.address,
+          telephone: m.telephone,
+          distText: distText(dist),
         };
-        var success = function(data) {
-            wxMarkerData = data.wxMarkerData;
-            that.setData({
-                markers: wxMarkerData
-            });
-            that.setData({
-                latitude: wxMarkerData[0].latitude
-            });
-            that.setData({
-                longitude: wxMarkerData[0].longitude
-            });
-        }
-        BMap.search({
-            "query": '美食',
-            fail: fail,
-            success: success,
-            iconPath: '../../img/marker_red.png',
-            iconTapPath: '../../img/marker_red.png'
-        });
-    },
-    showSearchInfo: function(data, i) {
-        var that = this;
-        that.setData({
-            placeData: {
-                title: '名称：' + data[i].title + '\n',
-                address: '地址：' + data[i].address + '\n',
-                telephone: '电话：' + data[i].telephone
-            }
-        });
-    },
-    changeMarkerColor: function(data, id) {
-        var that = this;
-        var markersTemp = [];
-        for (var i = 0; i < data.length; i++) {
-            if (i === id) {
-                data[i].iconPath = "../../img/marker_yellow.png";
-            } else {
-                data[i].iconPath = "../../img/marker_red.png";
-            }
-            markersTemp[i] = data[i];
-        }
-        that.setData({
-            markers: markersTemp
-        });
+      });
+      this.setData({ markers: wxMarkerData || [], pois, loading: false, selectedId: -1, detail: null });
+      if (pois.length) { this.selectPoi(0); }
+    } catch (err) {
+      this.setData({ loading: false, error: '周边检索失败：' + errMsg(err) });
     }
-})
+  },
+
+  /** 选中 POI：高亮 marker + 地图聚焦 + 详情展示 */
+  selectPoi(id) {
+    const poi = this.data.pois[id];
+    const marker = this.data.markers[id];
+    if (!poi || !marker) { return; }
+    // 路径式更新图标（不整组重建 markers，避免地图闪烁）
+    this.setData(Object.assign(markerIconPatch(this.data.markers, id), {
+      selectedId: id,
+      latitude: marker.latitude,
+      longitude: marker.longitude,
+      detail: {
+        title: poi.title,
+        distText: poi.distText,
+        rows: [
+          { label: '地址', value: poi.address || '暂无' },
+          { label: '电话', value: poi.telephone || '暂无' },
+        ],
+      },
+    }));
+  },
+
+  onPoiTap(e) {
+    this.selectPoi(e.currentTarget.dataset.id);
+  },
+
+  onMarkerTap(e) {
+    this.selectPoi(e.markerId);
+  },
+});

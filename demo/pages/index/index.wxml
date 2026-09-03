@@ -1,0 +1,59 @@
+<view class="page">
+  <view class="hero {{theme}}">
+    <view class="hero-top">
+      <view class="hero-info">
+        <view class="hero-badge">BMapWX v1.2</view>
+        <view class="hero-title">百度地图小程序 JSAPI</view>
+        <view class="hero-sub">search · suggestion · geocoding · reverseGeocoding · 路线规划 · 静态图 · 天气</view>
+      </view>
+
+      <view class="illu illu-sm" wx:if="{{weather}}">
+        <view class="illu-sun" />
+        <view class="illu-cloud" />
+        <view class="illu-drops">
+          <view class="drop d1" />
+          <view class="drop d2" />
+          <view class="drop d3" />
+        </view>
+        <view class="illu-snow">
+          <view class="flake f1" />
+          <view class="flake f2" />
+          <view class="flake f3" />
+        </view>
+      </view>
+    </view>
+
+    <view class="hero-weather" wx:if="{{weather}}" hover-class="hero-weather-hover" bindtap="onWeatherTap">
+      <view class="hw-dot" style="background:{{weatherDot}}" />
+      <view class="hw-city">{{weather.currentCity}}<text class="hw-district" wx:if="{{weather.district}}"> · {{weather.district}}</text></view>
+      <view class="hw-divider" />
+      <view class="hw-desc">{{weather.weatherDesc}}</view>
+      <view class="hw-temp">{{weather.temperature}}°</view>
+      <view class="hw-arrow">›</view>
+    </view>
+
+    <view class="hw-forecast" wx:if="{{forecast.length}}">
+      <view class="hw-fc-item" wx:for="{{forecast}}" wx:key="date">
+        <view class="hw-fc-week">{{item.week}}</view>
+        <view class="hw-fc-dot" style="background:{{item.dotColor}}" />
+        <view class="hw-fc-temp">{{item.high}}°</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="demo-list">
+    <view class="demo-card"
+          wx:for="{{demos}}"
+          wx:key="path"
+          data-path="{{item.path}}"
+          hover-class="demo-card-hover"
+          bindtap="onDemoTap">
+      <view class="demo-index">{{index + 1}}</view>
+      <view class="demo-body">
+        <view class="demo-title">{{item.title}}</view>
+        <view class="demo-desc">{{item.desc}}</view>
+      </view>
+      <view class="demo-arrow">›</view>
+    </view>
+  </view>
+</view>

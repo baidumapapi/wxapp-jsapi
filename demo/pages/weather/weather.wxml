@@ -1,3 +1,75 @@
-<view class="weather">
-  <text>{{weatherData}}</text>
+<view class="page">
+  <view class="hero {{theme}}" wx:if="{{weather}}">
+    <view class="hero-head">
+      <view class="hero-city">{{city}}<text class="hero-district" wx:if="{{district}}"> · {{district}}</text></view>
+      <view class="hero-date">{{today}}</view>
+    </view>
+
+    <view class="hero-main">
+      <view class="hero-left">
+        <view class="hero-temp">{{weather.temperature}}<text class="hero-unit">°</text></view>
+        <view class="hero-desc">{{weather.weatherDesc}}</view>
+        <view class="hero-feels" wx:if="{{feels}}">体感 {{feels}}</view>
+      </view>
+
+      <view class="illu">
+        <view class="illu-sun" />
+        <view class="illu-cloud" />
+        <view class="illu-drops">
+          <view class="drop d1" />
+          <view class="drop d2" />
+          <view class="drop d3" />
+        </view>
+        <view class="illu-snow">
+          <view class="flake f1" />
+          <view class="flake f2" />
+          <view class="flake f3" />
+        </view>
+      </view>
+    </view>
+
+    <view class="hero-update">更新于 {{weather.updatedAt || '—'}}</view>
+  </view>
+
+  <!-- 城市快捷切换：当前位置（国内）/ 国际城市（weatherAbroad） -->
+  <scroll-view class="wcity-scroll" scroll-x enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="wcity-chip {{activeCity === item.name ? 'wcity-active' : ''}}"
+          wx:for="{{cities}}" wx:key="name"
+          data-name="{{item.name}}" data-lng="{{item.lng}}" data-lat="{{item.lat}}" bindtap="onCityTap">{{item.name}}</view>
+  </scroll-view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <view class="spinner" />
+    <text>正在获取天气…</text>
+  </view>
+
+  <view class="card" wx:if="{{forecast.length}}">
+    <view class="card-title">7 天预报</view>
+    <scroll-view class="fc-scroll" scroll-x enhanced="{{true}}" show-scrollbar="{{false}}">
+      <view class="fc-item" wx:for="{{forecast}}" wx:key="date">
+        <view class="fc-week {{index === 0 ? 'fc-today' : ''}}">{{item.week}}</view>
+        <image class="fc-icon" src="{{item.icon}}" mode="aspectFit" />
+        <view class="fc-text">{{item.textDay}}</view>
+        <view class="fc-temp">{{item.high}}°<text class="fc-low"> {{item.low}}°</text></view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="card" wx:if="{{stats.length}}">
+    <view class="card-title">天气详情</view>
+    <view class="stat-grid">
+      <view class="stat" wx:for="{{stats}}" wx:key="label">
+        <view class="stat-value {{item.cls}}">{{item.value}}</view>
+        <view class="stat-label">{{item.label}}</view>
+      </view>
+    </view>
+    <button class="btn btn-primary btn-block" bindtap="refresh">刷新天气</button>
+  </view>
+
+  <view class="card weather-empty" wx:if="{{!loading && !error && !weather}}">
+    <view class="weather-empty-text">当前无天气数据，点击按钮获取</view>
+    <button class="btn btn-primary btn-block" bindtap="refresh">获取天气</button>
+  </view>
+
+  <view class="error" wx:if="{{error}}">{{error}}</view>
 </view>
