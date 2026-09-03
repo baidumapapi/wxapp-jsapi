@@ -44,7 +44,7 @@
  
 ## 快速开始
 
-1. **引入**：将 `demo/libs/bmap-wx.min.js` 复制到你的小程序目录（纯 ES5，可直接运行；或使用 `src/bmap-wx.js` 源码，ES2017+ 语法，需自备转译）：
+1. **引入**：将 `dist/bmap-wx.min.js`（发布产物，纯 ES5，可直接运行）复制到你的小程序目录：
 
 ```js
 const { BMapWX } = require('./libs/bmap-wx.min.js');

@@ -4,7 +4,8 @@
  * 构建管线：src/bmap-wx.js
  *   → babel（ES6+ 语法降级 ES5：let/const、箭头函数、class、async/await→Promise 链）
  *   → terser（压缩）
- *   → 产物同步到 demo/libs/bmap-wx.min.js（demo 引用的压缩包）
+ *   → 产物输出到 dist/bmap-wx.min.js（发布产物）并同步 demo/libs/bmap-wx.min.js
+ *     （demo 引用的压缩包，开箱即用）
  * 产物为 ES5 语法，不依赖 regenerator 运行时，可直接在微信小程序中运行。
  *
  * 用法：
@@ -22,7 +23,8 @@ const root = path.resolve(__dirname, '..');
 const pkg = require('../package.json');
 const srcFile = path.join(root, 'src', 'bmap-wx.js');
 const outputFiles = [
-  path.join(root, 'demo', 'libs', 'bmap-wx.min.js'),
+  path.join(root, 'dist', 'bmap-wx.min.js'), // 发布产物（独立目录，供使用者引入）
+  path.join(root, 'demo', 'libs', 'bmap-wx.min.js'), // demo 引用的压缩包（开箱即用）
 ];
 const banner = `/*! ${pkg.name} v${pkg.version} | 百度地图微信小程序 JS API */`;
 
@@ -52,6 +54,7 @@ async function compile() {
   const output = banner + '\n' + result.code;
 
   for (const file of outputFiles) {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, output);
   }
 

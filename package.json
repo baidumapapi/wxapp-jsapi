@@ -5,7 +5,8 @@
   "main": "src/bmap-wx.js",
   "types": "index.d.ts",
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "scripts": {
     "build": "node scripts/build.js",
