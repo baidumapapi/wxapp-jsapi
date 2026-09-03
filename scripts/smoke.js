@@ -308,3 +308,19 @@ if (AK) {
   console.log(`\n${passed}/${cases.length} 通过${AK ? '' : '（未设 BMAP_AK，跳过真实接口用例）'}`);
   process.exit(passed === cases.length ? 0 : 1);
 })();
+test('失败回调：errMsg 截断 160 字符，rawMessage 保留完整原文', async () => {
+  const longMsg = 'E'.repeat(500);
+  global.wx = {
+    request: opt => {
+      const res = { statusCode: 200, data: { status: 123, message: longMsg } };
+      setTimeout(() => opt.success(res), 0);
+    },
+  };
+  const b = new BMapWX({ ak: 'x' });
+  const err = await new Promise(resolve => {
+    b.search({ query: 'x', location: '116.0,39.9', success: () => resolve(null), fail: resolve });
+  });
+  assert.strictEqual(err.rawMessage, longMsg, 'rawMessage 应为完整原文');
+  assert.strictEqual(err.errMsg.length, 161, 'errMsg 应截断为 160+…');
+  assert.ok(err.errMsg.endsWith('…'), 'errMsg 以省略号结尾');
+});

@@ -104,8 +104,8 @@ bmap.search({
 > - 天气接口返回 `weatherData` 与 `wxMarkerData`（兼容旧版）。
 >
 > **失败回调统一为 `{ errMsg, message, statusCode, rawMessage }`**：
-> `errMsg` 为后端原文（超长时截断 160 字符），`message` 为错误码映射的中文文案，
-> `statusCode` 为百度状态码，`rawMessage` 与 `errMsg` 相同。常用状态码文案：2 参数错误、
+> `errMsg` 为展示用（后端原文，超长时截断 160 字符并加 …），`message` 为错误码映射的中文文案，
+> `statusCode` 为百度状态码，`rawMessage` 为完整原文（未截断，供开发者诊断排查）。常用状态码文案：2 参数错误、
 > 3 权限校验失败、4 配额校验失败、5 ak 不存在或非法、6 接口无访问权限、10 服务已下线、
 > 220 Referer 校验失败（多因 AK 类型与应用来源不匹配）、221 IP 校验失败、
 > 240 APP 服务被禁用（该服务未开通）、301 服务端错误、302 当日配额用完、
@@ -203,10 +203,10 @@ bmap.search({
 
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
- errMsg                | string             | 是     |错误信息（后端原文，超长截断）
+ errMsg                | string             | 是     |错误信息（展示用，后端原文超长时截断 160 字符）
  message               | string             | 是     |错误码映射的中文文案
  statusCode            | number             | 是     |错误状态码
- rawMessage            | string             | 是     |与 errMsg 相同
+ rawMessage            | string             | 是     |完整原文（未截断，供诊断）
  
  
  <h4 id="2.1">suggestionParam: Object</h4>
@@ -255,10 +255,10 @@ bmap.search({
 
   属性名                | 类型                | 是否必须| 描述
 ----------------------| -------------------|--------| -----
- errMsg                | string             | 是     |错误文案（后端原文，超长截断）
+ errMsg                | string             | 是     |错误文案（展示用，后端原文超长时截断 160 字符）
  message               | string             | 是     |错误码映射的中文文案
  statusCode            | number             | 是     |错误状态码
- rawMessage            | string             | 是     |与 errMsg 相同
+ rawMessage            | string             | 是     |完整原文（未截断，供诊断）
  
  <h4 id="3.1">reverseGeocodingParam: Object</h4>
  reverseGeocoding检索参数对象结构（旧名 regeocoding 参数相同）
@@ -313,10 +313,10 @@ bmap.search({
 
   属性名                | 类型 | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
- errMsg                | string             | 是     |错误信息（后端原文，超长截断）
+ errMsg                | string             | 是     |错误信息（展示用，后端原文超长时截断 160 字符）
  message               | string             | 是     |错误码映射的中文文案
  statusCode            | number             | 是     |错误状态码
- rawMessage            | string             | 是     |与 errMsg 相同
+ rawMessage            | string             | 是     |完整原文（未截断，供诊断）
  
 <h4 id="5.1">geocodingParam: Object</h4>
  geocoding检索参数对象结构
@@ -369,10 +369,10 @@ bmap.search({
 
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
- errMsg                | string             | 是     |错误信息（后端原文，超长截断）
+ errMsg                | string             | 是     |错误信息（展示用，后端原文超长时截断 160 字符）
  message               | string             | 是     |错误码映射的中文文案
  statusCode            | number             | 是     |错误状态码
- rawMessage            | string             | 是     |与 errMsg 相同
+ rawMessage            | string             | 是     |完整原文（未截断，供诊断）
 
  <h4 id="7.1">weatherParam: Object</h4>
  天气检索参数对象结构（weather 国内 / weatherAbroad 海外共用）
@@ -439,10 +439,10 @@ bmap.search({
 
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
- errMsg                | string             | 是     |错误信息（后端原文，超长截断）
+ errMsg                | string             | 是     |错误信息（展示用，后端原文超长时截断 160 字符）
  message               | string             | 是     |错误码映射的中文文案
  statusCode            | number             | 是     |错误状态码
- rawMessage            | string             | 是     |与 errMsg 相同
+ rawMessage            | string             | 是     |完整原文（未截断，供诊断）
 
  <h4 id="8.1">staticMapParam: Object</h4>
  静态图参数（本地拼装 URL，**不发起网络请求**；得到 url 后直接用于 &lt;image src="..."&gt; 组件）

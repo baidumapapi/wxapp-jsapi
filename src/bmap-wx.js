@@ -503,12 +503,15 @@ class BMapWX {
       // 响应体为网页/非 JSON 时，友好提示而非展示整段 HTML
       if (/^\s*<!DOCTYPE|^\s*<html/i.test(rawMessage)) {
         rawMessage = '服务端返回了网页内容而非接口数据，请求可能被拦截或网络出口受限';
-      } else if (typeof rawMessage === 'string' && rawMessage.length > 160) {
-        rawMessage = rawMessage.slice(0, 160) + '…';
       }
+      // errMsg 供直接展示（wx.showToast / 页面错误区，超长会撑爆 UI），超长截断；
+      // rawMessage 保留完整原文，供开发者诊断排查
+      const display = typeof rawMessage === 'string' && rawMessage.length > 160
+        ? rawMessage.slice(0, 160) + '…'
+        : rawMessage;
       fail({
-        errMsg: rawMessage,
-        message: STATUS_TEXT[statusCode] || rawMessage,
+        errMsg: display,
+        message: STATUS_TEXT[statusCode] || display,
         statusCode,
         rawMessage,
       });
