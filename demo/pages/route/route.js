@@ -61,10 +61,11 @@ Page({
     this.setData({ destination: e.detail.value });
   },
 
-  /** 交换起终点：已有路线时自动重新规划 */
+  /** 交换起终点：已有路线时自动重新规划（并使在途请求失效） */
   swapEndpoints() {
     const { origin, destination } = this.data;
-    this.setData({ origin: destination, destination: origin });
+    routeToken++;
+    this.setData({ origin: destination, destination: origin, error: '' });
     if (this.data.sumDistance) { this.planRoute(); }
   },
 
@@ -100,7 +101,7 @@ Page({
         params.region = '北京市';
       }
       const { routes } = await invoke(mode, params);
-      if (token !== routeToken) { return; } // 过期响应直接丢弃
+      if (token !== routeToken) { this.setData({ loading: false }); return; } // 过期响应丢弃并复位 loading
       if (!routes.length) {
         this.setData({ loading: false, error: '未规划出路线方案，请检查起终点后重试' });
         return;
@@ -142,7 +143,7 @@ Page({
       });
       this._applyPlan(0);
     } catch (err) {
-      if (token !== routeToken) { return; }
+      if (token !== routeToken) { this.setData({ loading: false }); return; } // 过期响应丢弃并复位 loading
       let message = '路线规划失败：' + errMsg(err);
       // status 240 = APP 服务被禁用：路线规划为独立配额服务，当前 ak 未开通
       if (err.statusCode === 240 || message.indexOf('服务被禁用') >= 0) {

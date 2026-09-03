@@ -42,7 +42,9 @@ Page({
     return new Promise((resolve) => {
       const done = () => {
         if (--pending <= 0) {
-          if (Object.keys(patch).length) { this.setData(patch); }
+          // 仅实际值变化才 setData（500ms 轮询下避免持续整页 diff 重渲染）
+          const dirty = Object.keys(patch).some(k => this.data[k] !== patch[k]);
+          if (dirty) { this.setData(patch); }
           resolve();
         }
       };

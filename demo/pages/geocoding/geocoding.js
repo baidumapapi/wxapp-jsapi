@@ -70,7 +70,7 @@ Page({
     });
   },
 
-  /** 点击 marker：高亮并更新坐标信息 */
+  /** 点击 marker：高亮并同步坐标信息（多候选点时卡片与地图一致） */
   onMarkerTap(e) {
     const marker = this.data.markers[e.markerId];
     if (!marker) { return; }
@@ -78,6 +78,8 @@ Page({
     this.setData(Object.assign(markerIconPatch(this.data.markers, e.markerId), {
       latitude: marker.latitude,
       longitude: marker.longitude,
+      'result.lng': Number(marker.longitude).toFixed(6),
+      'result.lat': Number(marker.latitude).toFixed(6),
     }));
   },
 });

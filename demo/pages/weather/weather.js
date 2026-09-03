@@ -52,13 +52,15 @@ Page({
   },
 
   async fetchWeather(opts = {}) {
-    // 记录当前查询目标，刷新时保持（定位 / 指定城市）
+    // 记录当前查询目标，刷新时保持（定位 / 指定城市）；token 丢弃过期响应避免快速切换城市竞态
     this._current = { location: opts.location || '', abroad: !!opts.abroad, city: opts.city || '' };
+    const token = (this._wToken = (this._wToken || 0) + 1);
     this.setData({ loading: true, error: '' });
     try {
       const method = this._current.abroad ? 'weatherAbroad' : 'weather';
       const params = this._current.location ? { location: this._current.location } : {};
       const { weatherData } = await invoke(method, params);
+      if (token !== this._wToken) { return; } // 过期响应丢弃
       const theme = weatherTheme(weatherData.weatherDesc);
       const aqi = aqiInfo(weatherData.aqi);
       this.setData({
@@ -80,6 +82,7 @@ Page({
         loading: false,
       });
     } catch (err) {
+      if (token !== this._wToken) { return; } // 过期响应丢弃
       this.setData({ loading: false, error: '天气获取失败：' + errMsg(err) });
     }
   },

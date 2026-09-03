@@ -13,18 +13,25 @@ const config = require('../config.js');
 const RED_ICON = '../../img/marker_red.png';
 const YELLOW_ICON = '../../img/marker_yellow.png';
 
+// SDK 实例为纯无状态（仅持有 ak/sk），模块级单例复用
+const client = new bmap.BMapWX({ ak: config.ak, sk: config.sk || '' });
+
 /** Promise 化调用 SDK 方法 */
 function invoke(method, params = {}) {
   if (!config.ak) {
     return Promise.reject(new Error(config.hint));
   }
-  const client = new bmap.BMapWX({ ak: config.ak, sk: config.sk || '' });
+  if (typeof client[method] !== 'function') {
+    return Promise.reject(new Error(`未知的 SDK 方法：${method}`));
+  }
   return new Promise((resolve, reject) => {
     const callbacks = {
       success: resolve,
       fail(err) {
-        // 打印完整失败对象，定位网络层错误（微信 errMsg 形如 request:fail xxx）
-        console.error('[bmap] ' + method + ' 失败：', err);
+        // 仅网络层失败打 error；业务失败（错误码）由页面提示，避免刷屏
+        if ((err && String(err.rawMessage || '').indexOf('request:fail') === 0)) {
+          console.error('[bmap] ' + method + ' 网络失败：', err);
+        }
         reject(err);
       },
     };
@@ -35,13 +42,6 @@ function invoke(method, params = {}) {
 /** 错误信息提取：兼容 SDK 抛出的 { errMsg } 与普通 Error */
 function errMsg(err) {
   return (err && (err.errMsg || err.message)) || '未知错误';
-}
-
-/** 高亮选中 marker：选中项变黄、其余变红（整组重建） */
-function highlightMarkers(markers, selectedId) {
-  return markers.map((marker, index) => Object.assign({}, marker, {
-    iconPath: index === selectedId ? YELLOW_ICON : RED_ICON,
-  }));
 }
 
 /**
@@ -143,12 +143,10 @@ module.exports = {
   errMsg,
   RED_ICON,
   YELLOW_ICON,
-  highlightMarkers,
   markerIconPatch,
   weatherTheme,
   formatForecast,
   distanceKm,
   distText,
   formatUptime,
-  ak: config.ak,
 };

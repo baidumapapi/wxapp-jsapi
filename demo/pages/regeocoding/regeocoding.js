@@ -47,7 +47,7 @@ Page({
           uid: p.uid,
           name: p.name,
           addr: p.addr || '',
-          distText: p.distance != null ? distText(Number(p.distance) / 1000) : '',
+          distText: Number.isFinite(Number(p.distance)) ? distText(Number(p.distance) / 1000) : '',
         })),
         loading: false,
       });

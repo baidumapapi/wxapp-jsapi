@@ -33,13 +33,19 @@ Page({
         city_limit: true,
       });
       if (token !== requestToken) { return; }
-      this.setData({ suggestions: result || [], loading: false });
-      if (!result.length) {
+      const list = result || [];
+      this.setData({ suggestions: list, loading: false });
+      if (!list.length) {
         this.setData({ error: '未找到相关地点建议，请尝试其他关键词' });
       }
     } catch (err) {
       if (token !== requestToken) { return; }
       this.setData({ error: '建议检索失败：' + errMsg(err), loading: false });
     }
+  },
+
+  /** 卸载时清理防抖定时器，避免已销毁实例上执行 setData */
+  onUnload() {
+    clearTimeout(searchTimer);
   },
 });

@@ -2,7 +2,6 @@ const {
   invoke,
   errMsg,
   RED_ICON,
-  YELLOW_ICON,
   markerIconPatch,
   weatherTheme,
   formatForecast,
@@ -24,6 +23,7 @@ const SCENES = ['美食', '酒店', '景点', '咖啡', '公园'];
 
 let sugTimer = null;
 let sugToken = 0;
+let searchToken = 0; // 场景/关键词检索序号：丢弃过期响应
 
 Page({
   data: {
@@ -72,10 +72,10 @@ Page({
   },
 
   onLoad() {
-    this.locate().then(() => {
+    this.locate().then((ok) => {
       this.fetchWeather();
-      // 开场即检索，用户一进来就有内容
-      this.searchAround(SCENES[0]);
+      // 定位成功才按当前位置开场检索；失败时保留错误提示，避免默认坐标"假搜索"
+      if (ok) { this.searchAround(SCENES[0]); }
     });
   },
 
@@ -85,6 +85,7 @@ Page({
 
   /* ================= 定位 ================= */
 
+  /** 定位：成功返回 true，失败返回 false（调用方据此决定是否继续） */
   async locate() {
     this.setData({ error: '' });
     try {
@@ -99,8 +100,10 @@ Page({
         latitude: m.latitude,
         longitude: m.longitude,
       });
+      return true;
     } catch (err) {
       this.setData({ error: '定位失败：' + errMsg(err) });
+      return false;
     }
   },
 
@@ -166,6 +169,7 @@ Page({
 
   async searchAround(query) {
     const q = (query || '').trim() || '美食';
+    const token = ++searchToken;
     this.setData({ searching: true, activeScene: this.data.scenes.indexOf(q) >= 0 ? q : '', error: '' });
     try {
       const { wxMarkerData } = await invoke('search', {
@@ -174,6 +178,7 @@ Page({
         iconPath: RED_ICON,
         iconTapPath: RED_ICON,
       });
+      if (token !== searchToken) { return; } // 过期响应丢弃
       const pois = (wxMarkerData || []).map((m, i) => {
         const dist = distanceKm(this.data.latitude, this.data.longitude, m.latitude, m.longitude);
         return {
@@ -193,6 +198,7 @@ Page({
         routeInfo: null,
       });
     } catch (err) {
+      if (token !== searchToken) { return; }
       this.setData({ searching: false, error: '检索失败：' + errMsg(err) });
     }
   },
@@ -234,8 +240,6 @@ Page({
   closeDetail() {
     this.setData({ showDetail: false, poster: '' });
   },
-
-  noop() {},
 
   callPoi() {
     const tel = this.data.detail && this.data.detail.telephone;
