@@ -125,6 +125,19 @@ bmap.search({
  success | Function([routeSuccess](#6.3)) | 否 | 成功回调，入参 { originalData, routes, wxPolylineData }
  fail | Function | 否 | 失败回调，入参 { errMsg, message, statusCode, rawMessage }
 
+ 示例（driving / walking / transit / riding 用法相同）：
+
+ ```js
+ bmap.driving({ // 换成 walking / transit / riding 即切换方式
+   origin: '39.908823,116.397470', // "纬度,经度" 或地点名称
+   destination: '39.915119,116.403963',
+   success(res) {
+     console.log(res.routes);          // 方案数组（多套方案时多条）
+     console.log(res.wxPolylineData);  // 主方案折线（gcj02），用于 <map polyline>
+   },
+ });
+ ```
+
  <h4 id="6.3">routeSuccess: Object</h4>
  路线规划成功回调函数的参数
 
@@ -205,6 +218,18 @@ bmap.search({
  fail                  | Function([suggestionFail](#2.3))|否      | 检索失败后回调函数
  
  其他参数和[Place Suggestion API](http://lbsyun.baidu.com/index.php?title=webapi/place-suggestion-api)请求参数一致（SDK 已固定 `ret_coordtype=gcj02ll`，返回坐标可直接用于小程序地图）。
+
+ 示例：
+
+ ```js
+ bmap.suggestion({
+   query: '天安门',
+   region: '北京市',
+   success(res) {
+     console.log(res.result); // [{ name, address, city, district, location: { lat, lng }(gcj02) }]
+   },
+ });
+ ```
  
 <h4 id="2.2">suggestionSuccess: Object</h4>
  suggestion检索成功回调函数的参数  
@@ -250,6 +275,17 @@ bmap.search({
  fail                  | Function([regeocodingFail](#3.3))|否      | 检索失败后回调函数
  
  其他参数和[Geocoding](https://lbs.baidu.com/index.php?title=webapi/guide/webservice-geocoding-abroad)请求参数一致。
+
+ 示例：
+
+ ```js
+ bmap.reverseGeocoding({
+   location: '39.915,116.404', // "纬度,经度"；默认当前定位
+   success(res) {
+     console.log(res.wxMarkerData[0].address); // 完整地址
+   },
+ });
+ ```
  
  <h4 id="3.2">reverseGeocodingSuccess: Object</h4>
  reverseGeocoding检索成功回调函数的参数  
@@ -299,6 +335,17 @@ bmap.search({
 
  其他参数和[Geocoding](https://lbs.baidu.com/index.php?title=webapi/guide/webservice-geocoding)请求参数一致。
 
+ 示例：
+
+ ```js
+ bmap.geocoding({
+   address: '北京市海淀区上地十街10号',
+   success(res) {
+     console.log(res.wxMarkerData[0]); // { latitude, longitude }（gcj02）
+   },
+ });
+ ```
+
  <h4 id="5.2">geocodingSuccess: Object</h4>
  geocoding检索成功回调函数的参数  
 
@@ -341,6 +388,23 @@ bmap.search({
  fail                  | Function([weatherFail](#7.3)) | 否 | 失败回调，入参 { errMsg, message, statusCode, rawMessage }
 
 > ⚠️ 接口地址须为 `https://api.map.baidu.com/weather/v1/`（**末尾带斜杠**），省略斜杠会返回 302；SDK 已内置正确地址。
+
+ 示例：
+
+ ```js
+ bmap.weather({
+   // location: '116.397470,39.908823', // "经度,纬度"（与其余接口顺序相反）；默认当前定位
+   success(res) {
+     console.log(res.weatherData.currentCity, res.weatherData.temperature);
+   },
+ });
+
+ // 海外天气：仅接受"经度,纬度"，不支持城市名
+ bmap.weatherAbroad({
+   location: '139.7671,35.6812', // 东京
+   success: res => console.log(res.weatherData.currentCity),
+ });
+ ```
 
  <h4 id="7.2">weatherSuccess: Object</h4>
  天气检索成功回调函数的参数
