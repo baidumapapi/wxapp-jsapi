@@ -67,7 +67,7 @@ bmap.search({
 
 ## Demo
 
-`demo` 目录为完整示例小程序，包含周边探索（explore）、周边检索、关键词联想、地理编码、逆地理编码、路线规划（多方案）、静态图（取景联动）、天气（国际城市切换）等页面。运行前复制 `demo/config.example.js` 为 `demo/config.js` 并填入你的 AK（该文件已被 git 忽略，密钥不会入库）。
+`demo` 目录为完整示例小程序，包含周边探索（explore）、周边检索、关键词联想、地理编码、逆地理编码、路线规划（多方案）、静态图（取景联动）、天气（国际城市切换）等页面。运行前复制 `demo/config.example.js` 为 `demo/config.js` 并填入你的 AK。
 
 ## 类参考
 <h3>BMapWX</h3>
@@ -83,7 +83,7 @@ bmap.search({
 
 方法名                | 返回值          | 描述
 ---------------------- | -------------------| -----
- getWXLocation(type, success, fail, complete)| none | 低级定位接口（兼容旧版公开调用），默认返回 gcj02 坐标
+ getWXLocation(type, success, fail, complete)| none | 低级定位接口，默认返回 gcj02 坐标
  search([searchParam](#1.1): Object)| none（结果经 success 回调）| 进行search检索，检索周边POI信息
  suggestion([suggestionParam](#2.1): Object)| none | 进行suggestion检索，根据内容进行模糊检索匹配，输入补全
  reverseGeocoding([reverseGeocodingParam](#3.1): Object)| none | 逆地理编码，根据经纬度获得对应的地理描述信息
