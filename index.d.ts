@@ -94,7 +94,7 @@ export interface SuggestionItem {
   address?: string;
   city?: string;
   district?: string;
-  /** 经纬度（gcj02；百度原生 location 为 bd09ll 语义，以 SDK 解析说明为准） */
+  /** 经纬度（gcj02；SDK 已固定 ret_coordtype=gcj02ll，可直接用于小程序地图） */
   location?: { lat: number; lng: number };
   [key: string]: unknown;
 }
@@ -148,12 +148,12 @@ export interface WeatherData {
   district?: string;
   /** 天气描述（如"多云"） */
   weatherDesc: string;
-  /** 当前温度（摄氏度） */
-  temperature: string;
+  /** 当前温度（数字，摄氏度） */
+  temperature: number;
   /** 体感温度（摄氏度） */
   feelsLike?: number;
-  /** 相对湿度（%） */
-  humidity: string;
+  /** 相对湿度（数字，如 23 表示 23%，不带 % 后缀） */
+  humidity: number;
   /** 风力等级描述 */
   windClass: string;
   /** 风向 */
@@ -162,7 +162,7 @@ export interface WeatherData {
   aqi?: number;
   /** 能见度（米） */
   vis?: number;
-  /** 更新时间 */
+  /** 更新时间（接口原始格式，如 "20260903171500"，展示需自行格式化） */
   updatedAt: string;
   /** 7 天预报（data_type=all 时返回） */
   forecast?: WeatherForecastItem[];

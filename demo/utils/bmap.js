@@ -111,6 +111,17 @@ function formatForecast(weatherData) {
   }));
 }
 
+/**
+ * 天气更新时间格式化（展示层）：接口原始格式 "20260903171500" -> "2026-09-03 17:15"；
+ * 非紧凑格式（如老接口的 "17:15"）原样返回。
+ */
+function formatUptime(uptime) {
+  if (typeof uptime !== 'string') { return uptime; }
+  const m = uptime.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/);
+  if (!m) { return uptime; }
+  return `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}`;
+}
+
 /** 两点球面距离（km） */
 function distanceKm(lat1, lng1, lat2, lng2) {
   const rad = d => (d * Math.PI) / 180;
@@ -138,5 +149,6 @@ module.exports = {
   formatForecast,
   distanceKm,
   distText,
+  formatUptime,
   ak: config.ak,
 };

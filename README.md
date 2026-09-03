@@ -83,13 +83,13 @@ BMAP_AK=<ak> npm test # 追加 8 个真实接口用例（search/suggestion/geoco
    - **开发调试（开发者工具）**：优先用「微信小程序」类型 AK（绑定项目 AppID，工具直连模式即可通过校验）；若遇到 220「APP Referer 校验失败」，多为工具走了本地代理转发（请求 Referer 变成 127.0.0.1），可尝试刷新工具/切换代理设置，或改用**服务端**类型 AK（IP 白名单留空或 SN 校验，后者把 SK 填入 `demo/config.js` 的 `sk` 字段，SDK 自动签名）兜底；
    - **发布真机**：可用「微信小程序」类型 AK（需绑定小程序的真实 AppID），或沿用服务端 AK（需配 SN 签名/合法域名）。
 3. 本项目已关闭 `urlCheck`（开发者工具中"不校验合法域名"），可直接请求 `https://api.map.baidu.com`；正式发布前请在小程序后台将 `https://api.map.baidu.com` 加入 request 合法域名。
-4. demo 以引导页（pages/index）为入口，点击卡片进入 7 个示例页面：检索（search 周边检索）、联想（suggestion 关键词建议）、解析（geocoding 地理编码）、逆解析（reverseGeocoding 逆地理编码）、路线规划（driving/transit/walking/riding 四种方式，折线绘制在地图上）、静态图（staticMap 生成地图图片）、天气（weather 按当前定位查询实时天气）。页面代码为最新小程序风格（ES2017+ / async-await / rpx）。
+4. demo 以引导页（pages/index）为入口，点击卡片进入示例页面：周边探索（explore 综合演示：定位+天气+检索+路线+海报）、检索（search 周边检索）、联想（suggestion 关键词建议）、解析（geocoding 地理编码）、逆解析（reverseGeocoding 逆地理编码）、路线规划（driving/transit/walking/riding 四种方式，多方案与行程预览）、静态图（staticMap 生成地图图片，含取景联动）、天气（weather 按当前定位查询实时天气，支持国际城市切换）。页面代码为最新小程序风格（ES2017+ / async-await / rpx）。
 5. 天气接口（weather / weatherAbroad）与其它 Web 服务 API 一致；若手工拼 URL 遇到 302，请确认路径是否带了末尾斜杠（`/weather/v1/`，SDK 已内置）。
 
 ## 上线检查清单
 提交前/发版前逐项确认：
 
-1. **AK 安全**：`demo/config.js` 中不提交真实 ak/sk（本次重构已将其置为占位符）；真实密钥通过本地修改或构建注入。
+1. **AK 安全**：`demo/config.js`（本地真实密钥）已被 `.gitignore` 忽略，不会提交；仓库发布的是 `demo/config.example.js` 占位模板（`ak: ''`）。真实密钥仅存本地，或通过构建注入。
 2. **AK 类型与配额**：正式环境使用已开通所需服务（含路线规划等配额服务）的 AK。
 3. **合法域名**：小程序后台「开发管理 → 服务器域名」将 `https://api.map.baidu.com` 加入 request 合法域名（演示阶段可用工具内"不校验合法域名"替代）。
 4. **隐私声明**：小程序后台「设置 → 服务内容声明 → 用户隐私保护指引」中声明位置信息用途（`getLocation` 权限）；`demo/app.json` 的 `permission` / `requiredPrivateInfos` 已就位，需与后台声明保持一致。
@@ -232,7 +232,7 @@ BMAP_AK=<ak> npm test # 追加 8 个真实接口用例（search/suggestion/geoco
  success               | Function([suggestionSuccess](#2.2))|否   | 检索成功后回调函数
  fail                  | Function([suggestionFail](#2.3))|否      | 检索失败后回调函数
  
- 其他参数和[Place Suggestion API](http://lbsyun.baidu.com/index.php?title=webapi/place-suggestion-api)请求参数一致。
+ 其他参数和[Place Suggestion API](http://lbsyun.baidu.com/index.php?title=webapi/place-suggestion-api)请求参数一致（SDK 已固定 `ret_coordtype=gcj02ll`，返回坐标可直接用于小程序地图）。
  
 <h4 id="2.2">suggestionSuccess: Object</h4>
  suggestion检索成功回调函数的参数  
@@ -250,7 +250,7 @@ BMAP_AK=<ak> npm test # 追加 8 个真实接口用例（search/suggestion/geoco
  address                | string             | 地址描述
  city                   | string             | 所属城市
  district               | string             | 所属区县
- location               | Object             | 经纬度 { lat, lng }（百度坐标，非 gcj02）
+ location               | Object             | 经纬度 { lat, lng }（**gcj02**，SDK 已固定 ret_coordtype=gcj02ll，可直接用于小程序地图）
  其余字段                | -                  | 与 Place Suggestion API 返回一致（如 uid、province、cityid 等），建议直接以 originalData 为准
  
 <h4 id="2.3">suggestionFail: Object</h4>
@@ -360,9 +360,11 @@ BMAP_AK=<ak> npm test # 追加 8 个真实接口用例（search/suggestion/geoco
 
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
- location              | string             | 否      |天气地点，"经度,纬度"（注意与其余接口顺序相反，天气接口约定）；默认当前定位
+ location              | string             | 否      |天气地点，"经度,纬度"（注意与其余接口顺序相反，天气接口约定；**weatherAbroad 仅接受经纬度，不支持城市名**）；默认当前定位
  district_id           | string             | 否      |区域 ID（与 location 二选一，同时传时官方按 district_id 优先）；不传按经纬度查询
- data_type             | string             | 否      |数据类型，默认 all
+ data_type             | string             | 否      |数据类型：all 实况+7天预报（默认）/ now 仅实况
+ output                | string             | 否      |返回格式，默认 json
+ coordtype             | string             | 否      |坐标类型，默认 gcj02
  success               | Function([weatherSuccess](#7.2)) | 否 | 成功回调，入参 { originalData, weatherData, wxMarkerData(兼容) }
  fail                  | Function([weatherFail](#7.3)) | 否 | 失败回调，入参 { errMsg, message, statusCode, rawMessage }
 
@@ -394,7 +396,7 @@ BMAP_AK=<ak> npm test # 追加 8 个真实接口用例（search/suggestion/geoco
  forecast               | Array              | 7 天预报（data_type=all 时返回），元素含 date / week / textDay / high / low
  windClass              | string             | 风力等级描述
  windDir                | string             | 风向
- updatedAt              | string             | 更新时间
+ updatedAt              | string             | 更新时间（接口原始格式，如 "20260903171500"；demo 展示层已格式化，SDK 原样透传）
 
  <h4 id="7.3">weatherFail: Object</h4>
  天气检索失败回调函数的参数

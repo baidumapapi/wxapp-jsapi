@@ -1,4 +1,4 @@
-const { invoke, errMsg, weatherTheme, formatForecast } = require('../../utils/bmap');
+const { invoke, errMsg, weatherTheme, formatForecast, formatUptime } = require('../../utils/bmap');
 
 /** AQI 等级（对应 GB 3095 六级） */
 function aqiInfo(aqi) {
@@ -26,6 +26,7 @@ Page({
     theme: 'theme-default',
     feels: '',
     today: '',
+    updatedText: '', // 更新时间（已格式化，展示用）
     loading: true,
     error: '',
     /* 城市标题（国外查询时为所选城市名，国内为接口返回）与区县 */
@@ -66,6 +67,7 @@ Page({
         district: this._current.city ? '' : (weatherData.district || ''),
         theme,
         feels: weatherData.feelsLike != null ? weatherData.feelsLike + '°' : '',
+        updatedText: formatUptime(weatherData.updatedAt), // 展示层格式化（接口为原始紧凑格式）
         forecast: formatForecast(weatherData),
         stats: [
           { label: '湿度', value: this._withPercent(weatherData.humidity) },

@@ -244,18 +244,6 @@ function buildMarker(attrs, style = {}) {
 }
 
 /**
- * 天气数据更新时间格式化：接口返回 "20260903171500" 紧凑格式，转为可读的 "2026-09-03 17:15"；
- * 非紧凑格式（如老接口的 "17:15"）原样返回。
- * @private
- */
-function formatUptime(uptime) {
-  if (typeof uptime !== 'string') { return uptime; }
-  const m = uptime.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/);
-  if (!m) { return uptime; }
-  return `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}`;
-}
-
-/**
  * 解析天气响应为业务对象（国内/海外通用）。
  * @private
  */
@@ -275,7 +263,7 @@ function parseWeather(res) {
     humidity: now.rh,
     aqi: now.aqi,
     vis: now.vis,
-    updatedAt: formatUptime(now.uptime),
+    updatedAt: now.uptime, // 接口原始格式（如 "20260903171500"），展示需自行格式化
     forecast: (res.result.forecasts || []).map(f => ({
       date: f.date,
       week: f.week,
@@ -894,7 +882,7 @@ class BMapWX {
    * @param {string}   [param.center]    中心点 "经度,纬度" 或地点名，默认北京
    * @param {number}   [param.width]     图片宽度 px（默认 400，scale=2 时 ≤512）
    * @param {number}   [param.height]    图片高度 px（默认 300）
-   * @param {number}   [param.zoom]      地图级别 [3,18]，默认 11
+   * @param {number}   [param.zoom]      地图级别 [3,19]（scale=2 高清图上限 18），默认 11
    * @param {string}   [param.scale]     1 普通 / 2 高清（输出 2 倍像素；宽高须 ≤512，zoom 上限 18）
    * @param {string}   [param.coordtype] 坐标类型，默认 gcj02ll（与小程序坐标系一致）
    * @param {string}   [param.markers]      标注点坐标，如 "lng,lat|lng2,lat2"（多个用竖线 | 分隔），样式经 markerStyles

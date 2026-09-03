@@ -28,7 +28,7 @@
       </view>
     </view>
 
-    <view class="hero-update">更新于 {{weather.updatedAt || '—'}}</view>
+    <view class="hero-update">更新于 {{updatedText || '—'}}</view>
   </view>
 
   <!-- 城市快捷切换：当前位置（国内）/ 国际城市（weatherAbroad） -->
