@@ -55,6 +55,10 @@ const STATUS_TEXT = {
   403: '请求已被拒绝（应用黑名单或未获授权）',
 };
 
+/** 百度 Web 服务 API 业务成功判定（status=0）；天气为兼容旧版的双格式判断 */
+const isBaiduOk = res => (res.status === 0);
+const isBaiduOkCompat = res => (res.status === 0 || (res.error === 0 && res.status === 'success'));
+
 /**
  * 将字符串编码为 UTF-8 字节数组（含代理对处理）。
  */
@@ -303,6 +307,23 @@ function toBd09(value) {
 }
 
 /**
+ * 生成 SN 签名用的参数字符串：剔除空值与 sn/timestamp 后，按 key 字典序排列、
+ * 值做 encodeURIComponent 后拼接（不含 sk 与 sn 本身）。
+ * @param {Object} params 请求参数（含 ak）
+ * @param {string} sk     服务密钥（仅作参数名占位，保持签名规则一致，不入串）
+ * @returns {string} queryString
+ * @private
+ */
+function signedQuery(params, sk) { // eslint-disable-line no-unused-vars
+  return Object.keys(params)
+    .filter(k => k !== 'sn' && k !== 'timestamp')
+    .filter(k => params[k] !== '' && params[k] !== undefined && params[k] !== null)
+    .sort()
+    .map(key => `${key}=${encodeURIComponent(params[key])}`)
+    .join('&');
+}
+
+/**
  * Web 服务 SN 签名（参考 JSAPI SignSource 的加密保护思路）。
  * 官方规则（《Web 服务 API 签名机制》）：请求参数（含 ak）按 key 字典序升序排列、
  * 值做 encodeURIComponent 后拼成 queryString，再在末尾追加 sk，整体 md5 得 sn；
@@ -311,23 +332,19 @@ function toBd09(value) {
  *
  * @param {Object} params 请求参数（含 ak）
  * @param {string} sk     服务密钥
- * @returns {Object} 追加 timestamp + sn 的请求参数
+ * @returns {Object} 追加 timestamp + sn 的请求参数（剔除空值）
  * @private
  */
 function signParams(params, sk) {
+  // 剔除空值与非签名参数，保证返回值与签名串一致（空参无意义，URL 更干净）
   const clean = {};
   Object.keys(params).forEach(key => {
     if (key === 'sn' || key === 'timestamp') { return; }
     if (params[key] === '' || params[key] === undefined || params[key] === null) { return; }
     clean[key] = params[key];
   });
-  const query = Object.keys(clean)
-    .sort()
-    .map(key => `${key}=${encodeURIComponent(clean[key])}`)
-    .join('&');
-  const timestamp = String(Math.floor(Date.now() / 1000));
-  const sn = MD5(query + sk);
-  return Object.assign({}, clean, { timestamp, sn });
+  const sn = MD5(signedQuery(clean, sk) + sk);
+  return Object.assign({}, clean, { timestamp: String(Math.floor(Date.now() / 1000)), sn });
 }
 
 /**
@@ -338,7 +355,7 @@ function signParams(params, sk) {
 function ensureRouteParams(param) {
   if (param.origin && param.destination) { return true; }
   const fail = param.fail || function () {};
-  fail({ errMsg: 'input origin and destination!' });
+  fail({ errMsg: '请输入起点和终点' });
   return false;
 }
 
@@ -446,7 +463,7 @@ class BMapWX {
   /**
    * @constructor
    * @param {Object} options                配置
-   * @param {string} options.key            百度地图开放平台密钥。小程序建议选「服务端」类型并配 IP 白名单，
+   * @param {string} options.ak             百度地图开放平台密钥。小程序建议选「服务端」类型并配 IP 白名单，
    *                                        「微信小程序」类型在开发者工具中会因 Referer 校验失败（220）
    * @param {string} [options.sk]           服务密钥；配置后按官方《Web 服务 API 签名机制》自动生成
    *                                        timestamp+sn（ak 保留且参与签名）
@@ -586,7 +603,7 @@ class BMapWX {
         ak: this.ak,
         ret_coordtype: 'gcj02ll',
       }),
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: res => ({
         originalData: res,
         wxMarkerData: (res.results || []).map((poi, id) => buildMarker({
@@ -621,7 +638,7 @@ class BMapWX {
         ak: this.ak,
         ret_coordtype: 'gcj02ll',
       }),
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: res => ({
         originalData: res,
         result: res.result || [],
@@ -654,7 +671,7 @@ class BMapWX {
         language: param.language || 'zh-CN',
         language_auto: param.language_auto || 0,
       }),
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: (res, loc) => ({
         originalData: res,
         wxMarkerData: [buildMarker({
@@ -698,7 +715,7 @@ class BMapWX {
         { coord_type: param.coord_type || 'gcj02' },
         this.ak,
       ),
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: res => parseRouteResponse(res),
     });
   }
@@ -720,7 +737,7 @@ class BMapWX {
         { coord_type: param.coord_type || 'gcj02' },
         this.ak,
       ),
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: res => parseRouteResponse(res),
     });
   }
@@ -743,7 +760,7 @@ class BMapWX {
         { coord_type: param.coord_type || 'gcj02' },
         this.ak,
       ),
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: res => parseRouteResponse(res),
     });
   }
@@ -770,7 +787,7 @@ class BMapWX {
         p.destination = toBd09(param.destination);
         return p;
       },
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: res => parseRouteResponse(res),
     });
   }
@@ -787,7 +804,7 @@ class BMapWX {
   geocoding(param = {}) {
     if (!param.address) {
       const fail = param.fail || function () {};
-      fail({ errMsg: 'input address!' });
+      fail({ errMsg: '请输入待解析地址' });
       return;
     }
     this._request(param, {
@@ -800,9 +817,10 @@ class BMapWX {
         ak: this.ak,
         callback: param.callback || '',
       }),
-      ok: res => (res.status === 0),
+      ok: isBaiduOk,
       parse: res => {
-        const loc = res.result.location;
+        const loc = res.result && res.result.location;
+        if (!loc) { throw new Error('geocoding 响应缺少 location'); }
         return {
           originalData: res,
           wxMarkerData: [buildMarker({
@@ -838,7 +856,7 @@ class BMapWX {
         coordtype: param.coordtype || 'gcj02',
       }),
       // 新版：status=0（数字）；旧版：error=0 且 status='success'，兼容两种格式
-      ok: res => (res.status === 0 || (res.error === 0 && res.status === 'success')),
+      ok: isBaiduOkCompat,
       parse: res => {
         const weatherData = parseWeather(res);
         return {
@@ -920,11 +938,15 @@ class BMapWX {
     });
     if (this.sk) {
       // 静态图接口的 SN 校验：参数按 key 字典序编码拼接后 + sk 做 MD5（无 timestamp）
-      const query = Object.keys(data)
-        .sort()
-        .map(key => `${key}=${encodeURIComponent(data[key])}`)
-        .join('&');
-      data.sn = MD5(query + this.sk);
+      // 与 signParams 共用 signedQuery；剔空后保证"签名的参数集合 == URL 参数集合"
+      const clean = {};
+      Object.keys(data).forEach(key => {
+        if (data[key] !== '' && data[key] !== undefined && data[key] !== null) { clean[key] = data[key]; }
+      });
+      clean.sn = MD5(signedQuery(clean, this.sk) + this.sk);
+      // data 为 const，回填剔空后的参数（保证 URL 与签名一致）
+      Object.keys(data).forEach(key => { delete data[key]; });
+      Object.assign(data, clean);
     }
     const query = Object.keys(data)
       .map(key => `${key}=${encodeURIComponent(data[key])}`)
