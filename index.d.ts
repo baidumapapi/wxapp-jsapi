@@ -15,13 +15,13 @@ export interface BMapWXOptions {
 
 /** 失败回调统一入参 */
 export interface FailResult {
-  /** 后端原文（超长截断 160 字符） */
+  /** 后端原文（展示用，超长截断 160 字符并加 …） */
   errMsg: string;
   /** 错误码映射的中文文案 */
   message: string;
   /** 百度状态码 */
   statusCode: number;
-  /** 与 errMsg 相同 */
+  /** 完整原文（未截断，供诊断排查） */
   rawMessage: string;
 }
 
@@ -195,6 +195,17 @@ export interface SearchParam extends ParamBase<SearchSuccess> {
   location?: string;
   /** 检索关键词，默认 "生活服务$美食&酒店" */
   query?: string;
+  /** 检索半径（米），默认 2000 */
+  radius?: number;
+  /** 分页：每页条数（默认 10）与页码（默认 0） */
+  page_size?: number;
+  page_num?: number;
+  /** 检索范围：scope=1 取默认字段，2 返回附加信息 */
+  scope?: number;
+  /** 过滤条件（如 "sort=distance"） */
+  filter?: string;
+  /** 输入坐标类型，默认 2（gcj02） */
+  coord_type?: number;
   /* marker 样式透传：iconPath / iconTapPath / width / height / alpha */
 }
 
@@ -205,6 +216,8 @@ export interface SuggestionParam extends ParamBase<SuggestionSuccess> {
   /** 检索城市，默认全国 */
   region?: string;
   city_limit?: boolean;
+  /** 返回格式（默认 json） */
+  output?: string;
 }
 
 /** 逆地理编码参数 */
@@ -215,6 +228,17 @@ export interface ReverseGeocodingParam extends ParamBase<GeocodingSuccess> {
   coordtype?: string;
   /** 是否返回周边 POI（0/1），默认 1 */
   extensions_poi?: 0 | 1;
+  /** 是否返回周边道路（默认 false） */
+  extensions_road?: boolean;
+  /** 是否返回乡镇街道（默认 false） */
+  extensions_town?: boolean;
+  /** 检索半径（米），默认 1000 */
+  radius?: number;
+  /** 返回语言（如 zh-CN），默认 zh-CN */
+  language?: string;
+  language_auto?: 0 | 1;
+  /** 返回格式（默认 json） */
+  output?: string;
 }
 
 /** 地理编码参数 */
@@ -225,9 +249,11 @@ export interface GeocodingParam extends ParamBase<GeocodingSuccess> {
   ret_coordtype?: string;
   /** 地址所在城市，默认空 */
   city?: string;
+  /** 返回格式（默认 json） */
+  output?: string;
 }
 
-/** 路线规划通用参数（五种路线共用） */
+/** 路线规划通用参数（driving / walking / transit / riding 共用） */
 export interface RouteParam extends ParamBase<RouteSuccess> {
   /** 起点，"纬度,经度"或地点名称（必填） */
   origin: string;
@@ -239,6 +265,18 @@ export interface RouteParam extends ParamBase<RouteSuccess> {
   ret_coordtype?: string;
   /** 输入坐标类型（driving / walking / riding），默认 gcj02；公交接口不支持，SDK 自动换算 */
   coord_type?: string;
+  /** 起点城市（transit 常用，如"北京市"；名称形式起点时需提供） */
+  region?: string;
+  /** 终点城市（transit 跨城时） */
+  region_d?: string;
+  /** 途经城市（driving / riding） */
+  city?: string;
+  /** 车牌号（driving 限行策略/riding 用） */
+  plate?: string;
+  /** 路线宽度（riding，像素） */
+  width?: number;
+  /** 返回格式（默认 json） */
+  output?: string;
 }
 
 /** 天气检索参数（weather / weatherAbroad 共用） */
