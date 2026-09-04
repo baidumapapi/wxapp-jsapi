@@ -1,14 +1,4 @@
-const { invoke, weatherTheme, formatForecast } = require('../../utils/bmap');
-
-/** 天气主题 -> 摘要小圆点颜色（与主卡主题同色系） */
-const DOT_COLORS = {
-  'theme-sunny': '#ffd76e',
-  'theme-cloudy': '#aab4c0',
-  'theme-rain': '#7fd0de',
-  'theme-snow': '#cfe3f5',
-  'theme-fog': '#c3c9d3',
-  'theme-default': '#9be15d',
-};
+const { invoke, weatherTheme, formatForecast, weatherDotColor } = require('../../utils/bmap');
 
 const DEMOS = [
   {
@@ -75,9 +65,9 @@ Page({
         weather: weatherData,
         forecast: formatForecast(weatherData),
         theme,
-        weatherDot: DOT_COLORS[theme] || '#9be15d',
+        weatherDot: weatherDotColor(theme),
       });
-    } catch (e) {
+    } catch (err) {
       /* 忽略：天气取不到时顶部不展示 */
     }
   },

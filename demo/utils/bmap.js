@@ -138,6 +138,50 @@ function distText(km) {
   return km < 1 ? (km * 1000).toFixed(0) + 'm' : km.toFixed(1) + 'km';
 }
 
+/** 场景快选（search / explore 共用） */
+const SCENES = ['美食', '酒店', '景点', '咖啡', '公园'];
+
+/** 交通方式（route / explore 共用） */
+const ROUTE_MODES = [
+  { key: 'driving', label: '驾车' },
+  { key: 'transit', label: '公交' },
+  { key: 'walking', label: '步行' },
+  { key: 'riding', label: '骑行' },
+];
+
+/** 天气主题 -> 摘要圆点颜色（亮色系，深色卡片上使用；与 formatForecast 的深色系不同） */
+const DOT_COLORS_LIGHT = {
+  'theme-sunny': '#ffd76e',
+  'theme-cloudy': '#aab4c0',
+  'theme-rain': '#7fd0de',
+  'theme-snow': '#cfe3f5',
+  'theme-fog': '#c3c9d3',
+  'theme-default': '#9be15d',
+};
+
+function weatherDotColor(theme) {
+  return DOT_COLORS_LIGHT[theme] || '#9be15d';
+}
+
+/** POI 映射（search / explore 同构；含 dist 原始距离供详情使用） */
+function toPoiList(wxMarkerData, lat, lng) {
+  return (wxMarkerData || []).map((m, i) => {
+    const dist = distanceKm(lat, lng, m.latitude, m.longitude);
+    return {
+      id: i,
+      title: m.title,
+      address: m.address,
+      telephone: m.telephone,
+      dist,
+      distText: distText(dist),
+    };
+  });
+}
+
+/** 距离 / 时长文案（入参分别为米 / 秒） */
+function fmtDistance(meters) { return (Number(meters) / 1000).toFixed(1) + ' 公里'; }
+function fmtDuration(seconds) { return '约 ' + Math.max(1, Math.round(Number(seconds) / 60)) + ' 分钟'; }
+
 module.exports = {
   invoke,
   errMsg,
@@ -149,4 +193,10 @@ module.exports = {
   distanceKm,
   distText,
   formatUptime,
+  SCENES,
+  ROUTE_MODES,
+  weatherDotColor,
+  toPoiList,
+  fmtDistance,
+  fmtDuration,
 };

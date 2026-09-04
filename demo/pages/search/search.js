@@ -3,11 +3,9 @@ const {
   errMsg,
   RED_ICON,
   markerIconPatch,
-  distanceKm,
-  distText,
+  SCENES,
+  toPoiList,
 } = require('../../utils/bmap');
-
-const SCENES = ['美食', '酒店', '景点', '咖啡', '公园'];
 
 Page({
   data: {
@@ -62,16 +60,7 @@ Page({
         iconPath: RED_ICON,
         iconTapPath: RED_ICON,
       });
-      const pois = (wxMarkerData || []).map((m, i) => {
-        const dist = distanceKm(this.data.latitude, this.data.longitude, m.latitude, m.longitude);
-        return {
-          id: i,
-          title: m.title,
-          address: m.address,
-          telephone: m.telephone,
-          distText: distText(dist),
-        };
-      });
+      const pois = toPoiList(wxMarkerData, this.data.latitude, this.data.longitude);
       this.setData({ markers: wxMarkerData || [], pois, loading: false, selectedId: -1, detail: null });
       if (pois.length) { this.selectPoi(0); }
     } catch (err) {

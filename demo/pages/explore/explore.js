@@ -5,21 +5,13 @@ const {
   markerIconPatch,
   weatherTheme,
   formatForecast,
-  distanceKm,
-  distText,
+  SCENES,
+  ROUTE_MODES,
+  weatherDotColor,
+  toPoiList,
+  fmtDistance,
+  fmtDuration,
 } = require('../../utils/bmap');
-
-/** 天气主题 -> 胶囊圆点颜色 */
-const DOT_COLORS = {
-  'theme-sunny': '#ffd76e',
-  'theme-cloudy': '#aab4c0',
-  'theme-rain': '#7fd0de',
-  'theme-snow': '#cfe3f5',
-  'theme-fog': '#c3c9d3',
-  'theme-default': '#9be15d',
-};
-
-const SCENES = ['美食', '酒店', '景点', '咖啡', '公园'];
 
 let sugTimer = null;
 let sugToken = 0;
@@ -48,12 +40,7 @@ Page({
     showDetail: false,
     callable: false,
     /* 路线 */
-    modes: [
-      { key: 'driving', label: '驾车' },
-      { key: 'transit', label: '公交' },
-      { key: 'walking', label: '步行' },
-      { key: 'riding', label: '骑行' },
-    ],
+    modes: ROUTE_MODES,
     routeMode: 'driving',
     routing: false,
     routeInfo: null, // { mode, distance, duration, count }
@@ -117,9 +104,9 @@ Page({
         weather: weatherData,
         forecast: formatForecast(weatherData),
         weatherTheme: theme,
-        weatherDot: DOT_COLORS[theme] || '#9be15d',
+        weatherDot: weatherDotColor(theme),
       });
-    } catch (e) { /* 静默 */ }
+    } catch (err) { /* 静默 */ }
   },
 
   toggleWeather() {
@@ -150,7 +137,7 @@ Page({
       });
       if (token !== sugToken) { return; }
       this.setData({ suggestions: result || [] });
-    } catch (e) { /* 静默 */ }
+    } catch (err) { /* 静默 */ }
   },
 
   onSugTap(e) {
@@ -179,17 +166,7 @@ Page({
         iconTapPath: RED_ICON,
       });
       if (token !== searchToken) { return; } // 过期响应丢弃
-      const pois = (wxMarkerData || []).map((m, i) => {
-        const dist = distanceKm(this.data.latitude, this.data.longitude, m.latitude, m.longitude);
-        return {
-          id: i,
-          title: m.title,
-          address: m.address,
-          telephone: m.telephone,
-          dist,
-          distText: distText(dist),
-        };
-      });
+      const pois = toPoiList(wxMarkerData, this.data.latitude, this.data.longitude);
       this.setData({
         markers: wxMarkerData || [],
         pois,
@@ -280,8 +257,8 @@ Page({
         polyline: [{ points: wxPolylineData, color: '#4db900', width: 5, arrowLine: true }],
         routeInfo: {
           mode: this.data.modes.find(m => m.key === mode).label,
-          distance: (best.distance / 1000).toFixed(1) + ' 公里',
-          duration: '约 ' + Math.max(1, Math.round(best.duration / 60)) + ' 分钟',
+          distance: fmtDistance(best.distance),
+          duration: fmtDuration(best.duration),
           count: routes.length + ' 套方案',
         },
         routing: false,

@@ -3,14 +3,10 @@ const {
   errMsg,
   RED_ICON,
   YELLOW_ICON,
+  ROUTE_MODES,
+  fmtDistance,
+  fmtDuration,
 } = require('../../utils/bmap');
-
-const MODES = [
-  { key: 'driving', label: '驾车' },
-  { key: 'transit', label: '公交' },
-  { key: 'walking', label: '步行' },
-  { key: 'riding', label: '骑行' },
-];
 
 let routeToken = 0; // 请求序号：切换模式 / 重新规划时丢弃过期响应
 
@@ -19,7 +15,7 @@ const TURN_TEXT = { 3: '右转', 6: '左转', 7: '直行' };
 
 Page({
   data: {
-    modes: MODES,
+    modes: ROUTE_MODES,
     activeMode: 'driving',
     origin: '39.908823,116.397470',   // 天安门
     destination: '39.933362,116.380635', // 西直门
@@ -162,8 +158,8 @@ Page({
     this._collectSteps(r.steps, all, 0);
     this.setData({
       activePlan: index,
-      sumDistance: (r.distance / 1000).toFixed(1) + ' 公里',
-      sumDuration: '约 ' + Math.max(1, Math.round(r.duration / 60)) + ' 分钟',
+      sumDistance: fmtDistance(r.distance),
+      sumDuration: fmtDuration(r.duration),
       sumRoutes: routes.length + ' 套',
       stepAll: all,
       stepPrev: this.data.stepsExpanded ? all : all.slice(0, 3),

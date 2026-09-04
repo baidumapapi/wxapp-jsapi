@@ -2,7 +2,8 @@ const { invoke, errMsg } = require('../../utils/bmap');
 
 Page({
   data: {
-    /* 取景地图初始位置：地图为单向输入源，拖动/缩放后不再回写，避免受控属性导致跳动 */
+    /* 取景地图初始位置（仅初始渲染用，此后不再回写，避免受控属性导致跳动）；
+       ⚠️ 展示与生成的中心/级别请用下方 centerLat/centerLng/zoom */
     mapLat: 39.908823,
     mapLng: 116.397470,
     mapZoom: 11,
