@@ -41,6 +41,7 @@
  riding                | 路线规划 API 骑行（direction/v2/riding）
  weather               | 天气服务（weather/v1/）
  weatherAbroad         | 海外天气服务（weather_abroad/v1/）
+ staticMap             | 静态图服务（staticimage/v2）
  
 ## 快速开始
 
