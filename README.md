@@ -5,22 +5,26 @@
 [百度地图微信小程序JSAPI服务](https://lbs.baidu.com/index.php?title=wxjsapi)  
 
 ## 更新日志
-* 2017.01.11：发布v1.0版本，支持search、suggestion、regeocoding和weather四种接口。
+* 2017.01.11：发布 v1.0 版本，支持 search、suggestion、regeocoding 和 weather 四种接口。
 
-* 2017.02.15：修复location参数无效的bug。
+* 2017.02.15：修复 location 参数无效的 bug。
 
-* 2019.07.03：发布v1.1版本，增加geocoding接口，支持地址信息到经纬度的转换。
+* 2019.07.03：发布 v1.1 版本，增加 geocoding 接口，支持地址信息到经纬度的转换。
 
-* 2026.09：确认天气服务可通过 `https://api.map.baidu.com/weather/v1/` 直接调用——关键在于**接口路径末尾必须带斜杠**（无斜杠返回 302）。此前记录的各版本"小程序端天气不可用"即为该路径问题所致，SDK 已修正。
+* 2020.09：~~由于 ak 鉴权限制，小程序端 jsapi 暂不支持天气服务~~（原判定有误，见 v1.2）。
 
-* 2020.09：~~由于ak鉴权限制，小程序端jsapi暂不支持天气服务~~（2026.09 已确认为接口路径缺末尾斜杠的问题，见上）。
-
-* 2026.08（v1.2）：工程化重构。统一请求管线（定位→参数→SN 签名→请求→错误码映射→回调），
-  新增路线规划（driving / walking / transit / riding），方法名规范化
-  （`regeocoding` → `reverseGeocoding`，旧名保留为兼容别名），增加失败回调结构化字段
-  （`message` / `rawMessage`）、坐标系自动适配（gcj02，公交自动换算百度坐标）、
-  构建链（babel 转 ES5 + terser，`npm run build` / `npm run watch`），demo 全面现代化。
-  ⚠️ 接口参数/返回值语义不兼容变化见各小节；`request 域名` 要求不变。
+* 2026.08-09（v1.2）：工程化重构与功能增强。
+  - **工程**：统一请求管线（定位 → 参数 → SN 签名 → 请求 → 错误码映射 → 回调）、
+    构建链（babel 转 ES5 + terser，产物输出 `dist/` 与 `demo/libs/`）、
+    失败回调结构化字段（`message` / `rawMessage`，`rawMessage` 保留完整原文）、
+    坐标系自动适配（gcj02，公交自动换算百度坐标）、`index.d.ts` 完整类型声明。
+  - **新增接口**：路线规划（driving / walking / transit / riding）、
+    静态图（staticMap 全参数 + 取景联动）、海外天气（weatherAbroad）。
+  - **天气修复**：确认 `weather/v1/` 路径**末尾必须带斜杠**（无斜杠返回 302），
+    小程序端天气服务可用（原 telematics 老接口已下线）；国内/海外天气解析与演示完善。
+  - **方法规范化**：`regeocoding` → `reverseGeocoding`（旧名保留为兼容别名）。
+  - **Demo**：产品化示例（周边探索、多方案路线规划、静态图取景、天气主题与国际城市切换等）。
+  ⚠️ 接口参数/返回值语义变化见各小节；`request 域名` 要求不变。
 
 ## 概述
 百度地图微信小程序JavaScript API（下文简称小程序JSAPI），对百度地图Web服务API中的部分lbs接口，按照微信小程序的规范进行了前端JS封装，以方便微信小程序开发者的调用。
