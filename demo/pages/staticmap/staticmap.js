@@ -13,7 +13,6 @@ Page({
     zoom: 11,
     /* ---- 基础参数 ---- */
     labelText: '我的位置',
-    scale: 1, // 1 普通 / 2 高清
     width: 750,
     height: 460,
     /* ---- 高级参数 ---- */
@@ -106,7 +105,6 @@ Page({
   },
 
   onLabelInput(e) { this.setData({ labelText: e.detail.value }); },
-  onScaleTap(e) { this.setData({ scale: Number(e.currentTarget.dataset.scale) }); },
   onWidthInput(e) { this.setData({ width: Number(e.detail.value) || 0 }); },
   onHeightInput(e) { this.setData({ height: Number(e.detail.value) || 0 }); },
   onMarkersInput(e) { this.setData({ markers: e.detail.value }); },
@@ -119,27 +117,18 @@ Page({
 
   toggleAdvanced() { this.setData({ showAdvanced: !this.data.showAdvanced }); },
 
-  /** 以当前地图视野中心生成静态图（scale=2 时宽高须 ≤512，接口自动降级） */
+  /** 以当前地图视野中心生成静态图 */
   async generate() {
     if (this.data.loading) { return; }
     // 生成前强制同步一次实际视野，保证生成参数与地图所见一致
     await this._syncView();
     const center = `${this.data.centerLng},${this.data.centerLat}`;
     const label = (this.data.labelText || '').trim() || '中心点';
-    const hd = this.data.scale === 2;
-    let width = this.data.width || (hd ? 512 : 750);
-    let height = this.data.height || (hd ? 320 : 460);
-    let zoom = this.data.zoom;
-    if (hd) {
-      // 高清图：宽高 ≤512、zoom ≤18（低清为 [3,19]）
-      if (width > 512) { width = 512; }
-      if (height > 512) { height = 512; }
-      if (zoom > 18) { zoom = 18; }
-    }
+    const width = this.data.width || 750;
+    const height = this.data.height || 460;
     const params = {
       center,
-      zoom,
-      scale: this.data.scale,
+      zoom: this.data.zoom,
       width,
       height,
       coordtype: this.data.coordtype,

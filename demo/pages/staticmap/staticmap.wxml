@@ -37,21 +37,11 @@
     </view>
 
     <view class="sm-row">
-      <text class="sm-label">清晰度</text>
-      <view class="segment sm-segment">
-        <view class="segment-item {{scale === 1 ? 'segment-item-active' : ''}}"
-              data-scale="1" bindtap="onScaleTap">普通</view>
-        <view class="segment-item {{scale === 2 ? 'segment-item-active' : ''}}"
-              data-scale="2" bindtap="onScaleTap">高清 2x</view>
-      </view>
-    </view>
-
-    <view class="sm-row">
       <text class="sm-label">尺寸</text>
       <input class="sm-size-input" type="number" value="{{width}}" bindinput="onWidthInput" />
       <text class="sm-x">×</text>
       <input class="sm-size-input" type="number" value="{{height}}" bindinput="onHeightInput" />
-      <text class="sm-hint">（高清时自动 ≤512）</text>
+      <text class="sm-hint">（默认 750×460）</text>
     </view>
 
     <view class="sm-advanced" bindtap="toggleAdvanced">{{showAdvanced ? '收起高级参数 ▴' : '高级参数 ▾'}}</view>
@@ -106,7 +96,7 @@
   <view class="card" wx:if="{{mapUrl}}">
     <view class="card-title">生成结果（点击预览，长按保存）</view>
     <image class="map-img" src="{{mapUrl}}" mode="widthFix" bindtap="preview" binderror="onImgError" />
-    <view class="sm-meta">缩放 {{zoom}} 级 · {{scale === 2 ? '高清 ' + width + '×' + height : '标准 ' + width + '×' + height}} · 标注「{{labelText || '中心点'}}」</view>
+    <view class="sm-meta">缩放 {{zoom}} 级 · {{width}}×{{height}} · 标注「{{labelText || '中心点'}}」</view>
     <view class="sm-url" bindtap="copyUrl">{{mapUrl}}</view>
   </view>
 
