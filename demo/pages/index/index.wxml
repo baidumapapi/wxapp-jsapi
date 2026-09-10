@@ -2,7 +2,7 @@
   <view class="hero {{theme}}">
     <view class="hero-top">
       <view class="hero-info">
-        <view class="hero-badge">BMapWX v1.2</view>
+        <view class="hero-badge">BMapWX v2.0</view>
         <view class="hero-title">百度地图小程序 JSAPI</view>
         <view class="hero-sub">search · suggestion · geocoding · reverseGeocoding · 路线规划 · 静态图 · 天气</view>
       </view>
