@@ -90,13 +90,6 @@
         </view>
       </view>
       <view class="sm-row">
-        <text class="sm-label">屏幕类型</text>
-        <view class="segment sm-segment">
-          <view class="segment-item {{dpiType === 'ph' ? 'segment-item-active' : ''}}" data-value="ph" bindtap="onDpiTap">ph 高清屏</view>
-          <view class="segment-item {{dpiType === 'pl' ? 'segment-item-active' : ''}}" data-value="pl" bindtap="onDpiTap">pl 低分屏</view>
-        </view>
-      </view>
-      <view class="sm-row">
         <text class="sm-label">版权样式</text>
         <view class="segment sm-segment">
           <view class="segment-item {{copyright === 0 ? 'segment-item-active' : ''}}" data-value="0" bindtap="onCopyrightTap">log+文字</view>

@@ -23,7 +23,6 @@ Page({
     paths: '', // 折线/"lng,lat;lng2,lat2|..."
     pathStyles: '', // color,weight,opacity[,fillColor]
     coordtype: 'gcj02ll', // gcj02ll / bd09ll / wgs84ll
-    dpiType: 'ph', // ph 高清屏 / pl 低分屏（自 V3 起已废弃，保留兼容）
     copyright: 0, // 0 log+文字 / 1 纯文字
     /* ---- 结果 ---- */
     mapUrl: '',
@@ -116,7 +115,6 @@ Page({
   onPathStylesInput(e) { this.setData({ pathStyles: e.detail.value }); },
 
   onCoordtypeTap(e) { this.setData({ coordtype: e.currentTarget.dataset.value }); },
-  onDpiTap(e) { this.setData({ dpiType: e.currentTarget.dataset.value }); },
   onCopyrightTap(e) { this.setData({ copyright: Number(e.currentTarget.dataset.value) }); },
 
   toggleAdvanced() { this.setData({ showAdvanced: !this.data.showAdvanced }); },
@@ -145,7 +143,6 @@ Page({
       width,
       height,
       coordtype: this.data.coordtype,
-      dpiType: this.data.dpiType,
       copyright: this.data.copyright,
       // 文字标注官方用法：labels 传坐标，labelStyles 传内容与样式（content,fontWeight,fontSize,fontColor,bgColor,border）
       labels: center,
