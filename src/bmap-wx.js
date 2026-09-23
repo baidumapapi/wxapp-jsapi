@@ -373,8 +373,9 @@ function routeParams(param, fields, extra, ak) {
   const params = {
     origin: param.origin,
     destination: param.destination,
-    tactics: param.tactics || 0,
-    output: param.output || 'json',
+    // 与官方一致：未传不补默认（tactics 默认 0、output 默认 json，均由服务端处理）
+    tactics: param.tactics || '',
+    output: param.output || '',
     // direction 系接口仅支持 gcj02 / bd09ll / wgs84（长度≤6）
     ret_coordtype: param.ret_coordtype || 'gcj02',
     ak,
@@ -690,15 +691,16 @@ class BMapWX {
         location: loc.latLng,
         coordtype: param.coordtype || 'gcj02ll',
         ret_coordtype: 'gcj02ll',
-        // 与文档一致：未传不补默认（服务端默认 1000）
+        // 与文档一致：未传不补默认；extensions_poi 保持 SDK 默认 1（官方默认 0，为既有行为）
         radius: param.radius || '',
+        // 官方默认 output 为 XML，必须补 json（否则响应无法解析）
         output: param.output || 'json',
         ak: this.ak,
         extensions_poi: param.extensions_poi !== undefined ? param.extensions_poi : 1,
-        extensions_road: param.extensions_road || false,
-        extensions_town: param.extensions_town || false,
-        language: param.language || 'zh-CN',
-        language_auto: param.language_auto || 0,
+        extensions_road: param.extensions_road ? 'true' : '',
+        extensions_town: param.extensions_town ? 'true' : '',
+        language: param.language || '',
+        language_auto: param.language_auto || '',
       }),
       ok: isBaiduOk,
       parse: (res, loc) => ({
@@ -880,7 +882,7 @@ class BMapWX {
         // 与 location 二选一：仅显式传入时携带（同时传时官方按 district_id 优先，会吞掉 location）
         district_id: param.district_id || '',
         data_type: param.data_type || 'all',
-        output: param.output || 'json',
+        output: param.output || '',
         ak: this.ak,
         coordtype: param.coordtype || 'gcj02',
       }),

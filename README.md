@@ -30,17 +30,22 @@
   - **search 升级**：按入参自动分派 —— 传 `region` 走 `/place/v3/region` 城市检索（**无需定位**）；
     未传则走 `/place/v3/around` 周边检索（`location` 默认当前定位）。入参名与官方 V3 文档一致，
     新增 `tag` / `type` / `radius_limit` / `is_light_version` / `extensions_adcode` / `center` 透传。
-  - **行为变化**：请求参数最小化——未传的 `radius` / `page_size` / `page_num` / `scope` / `output` 等一律不携带，
-    与官方文档一致（服务端按默认值处理：radius 1000、分页 10/0、scope 基本信息、JSON 输出）；
+  - **行为变化**：请求参数最小化——未传参数一律不携带，与官方文档一致（全接口：`radius`/`page_size`/`page_num`/
+    `scope`/`output`/`tactics`/`extensions_road`/`extensions_town`/`language`/`language_auto` 等，服务端按默认值处理）；
     V3 排序策略更贴近百度地图 App 推荐。
+  - **保留的必要默认值**：`output=json`（地理编码/逆编码官方默认 XML，去掉无法解析）、`extensions_poi=1`
+    （官方默认 0，SDK 既有行为）、`data_type=all`（官方必填）、各坐标参数（gcj02 正确性必需）。
   - **suggestion 注意**：`region` 为必选参数（region/bounds/location 三选一），未传将由服务端返回参数错误。
-  - **suggestion 升级**：`/place/v3/suggestion`；V3 返回字段为 `results`（复数），SDK 统一输出 `result` 保持契约。
+  - **suggestion 升级**：`/place/v3/suggestion`；V3 返回字段为 `results`（复数），SDK 统一输出 `result` 保持契约；
+    返回元素不再包含 `cityid`（城市编码），可改用 `city` / `adcode`。
+  - **Demo**：新增 V3 接口测试页（v3test，around/region/suggestion 一键调用、控制台输出入参与结果）。
+  - **文档**：新增《升级指南（v2 → v3）》章节，含必改项、行为变化与迁移检查清单。
   - 移除 `/place/v2/search` 与 `/place/v2/suggestion` 路径（route/weather/staticMap 等无 V3 版本，保持不变）。
 
 ## 升级指南（v2 → v3）
 
 v3.0 将 Place API 迁移至 V3 并做了请求参数最小化（未传参数不再代填默认值，与官方文档一致）。
-**方法名、回调签名与返回结构没有变化**，但以下三处需要确认：
+**方法名与回调签名没有变化**，返回结构基本一致（仅 `cityid` 等两处字段差异，见下），需要确认的点：
 
 ### 必须修改的调用
 
@@ -53,19 +58,18 @@ v3.0 将 Place API 迁移至 V3 并做了请求参数最小化（未传参数不
 
 - **周边检索默认半径**：未传 `radius` 时由 SDK 的 2000 米改为服务端默认 **1000 米**——需要更大召回范围请显式传 `radius`（如 `2000`/`5000`）。
 - **结果排序**：V3 排序策略更贴近百度地图 App 推荐（`is_light_version=false`），与 v2 结果顺序可能不同；对"默认取第一条"类业务建议升级后对拍一次。
+- **suggestion 返回值**：V2 结果元素含 `cityid`（城市编码），**V3 返回中已移除**；如需城市编码请改用 `city` / `adcode`。其余字段与 v2 一致，且检索结果（search）在 V3 净增 `town` / `town_code` 等字段（只增不减）。
 
 ### 无需修改
 
 - 常规调用 `search({ query, location })` / `search({ query, region })` 原样可用，传 `region` 的城市检索为新增能力（无需定位）；
-- 返回结构（`wxMarkerData` / `result` 字段与元素均兼容，`telephone` 仍在顶层）、回调参数、类型声明、SN 签名与定位授权逻辑均无变化。
+- 返回结构：`wxMarkerData` 为 SDK 生成结构，无变化；suggestion 元素与 v2 一致（仅 `cityid` 除外，见上）；回调参数、类型声明、SN 签名与定位授权逻辑均无变化。
 
 ### 迁移检查清单
 
 1. 全局搜索 `suggestion(` 调用：确认均传 `region`；
 2. 全局搜索 `search(` 调用：确认均传 `query`；周边检索场景评估是否需显式 `radius`；
 3. 对结果顺序敏感的业务（如订单、推荐位）升级后与 v2 对拍一次。
-
-> 注：多边形区域检索（`bounds`，`/place/v3/polygon`）需账号单独开通权限，本版本未纳入。
 
 ## 概述
 百度地图微信小程序JavaScript API（下文简称小程序JSAPI），对百度地图Web服务API中的部分lbs接口，按照微信小程序的规范进行了前端JS封装，以方便微信小程序开发者的调用。
