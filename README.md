@@ -38,7 +38,6 @@
   - **suggestion 注意**：`region` 为必选参数（region/bounds/location 三选一），未传将由服务端返回参数错误。
   - **suggestion 升级**：`/place/v3/suggestion`；V3 返回字段为 `results`（复数），SDK 统一输出 `result` 保持契约；
     返回元素不再包含 `cityid`（城市编码），可改用 `city` / `adcode`。
-  - **Demo**：新增 V3 接口测试页（v3test，around/region/suggestion 一键调用、控制台输出入参与结果）。
   - 移除 `/place/v2/search` 与 `/place/v2/suggestion` 路径（route/weather/staticMap 等无 V3 版本，保持不变）。
 
 ## 概述
