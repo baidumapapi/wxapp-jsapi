@@ -1,4 +1,4 @@
-# 百度地图微信小程序JS API v3.0
+# 百度地图微信小程序JS API v2.1
 
 ## 相关链接
 [百度地图开放平台](https://lbs.baidu.com/)  
@@ -26,7 +26,7 @@
   - **Demo**：产品化示例（周边探索、多方案路线规划、静态图取景、天气主题与国际城市切换等）。
   ⚠️ 接口参数/返回值语义变化见各小节；`request 域名` 要求不变。
 
-* 2026.09（v3.0）：Place API 全面升级 V3，移除 v2 检索路径。
+* 2026.09（v2.1）：Place API 全面升级 V3，移除 v2 检索路径。
   - **search 升级**：按入参自动分派 —— 传 `region` 走 `/place/v3/region` 城市检索（**无需定位**）；
     未传则走 `/place/v3/around` 周边检索（`location` 默认当前定位）。入参名与官方 V3 文档一致，
     新增 `tag` / `type` / `radius_limit` / `is_light_version` / `extensions_adcode` / `center` 透传。
@@ -39,17 +39,17 @@
   - **suggestion 升级**：`/place/v3/suggestion`；V3 返回字段为 `results`（复数），SDK 统一输出 `result` 保持契约；
     返回元素不再包含 `cityid`（城市编码），可改用 `city` / `adcode`。
   - **Demo**：新增 V3 接口测试页（v3test，around/region/suggestion 一键调用、控制台输出入参与结果）。
-  - **文档**：新增《升级指南（v2 → v3）》章节，含必改项、行为变化与迁移检查清单。
+  - **文档**：新增《升级指南（v2.0 → v2.1）》章节，含必改项、行为变化与迁移检查清单。
   - 移除 `/place/v2/search` 与 `/place/v2/suggestion` 路径（route/weather/staticMap 等无 V3 版本，保持不变）。
 
-## 升级指南（v2 → v3）
+## 升级指南（v2.0 → v2.1）
 
-v3.0 将 Place API 迁移至 V3 并做了请求参数最小化（未传参数不再代填默认值，与官方文档一致）。
+v2.1 将 Place API 迁移至 V3 并做了请求参数最小化（未传参数不再代填默认值，与官方文档一致）。
 **方法名与回调签名没有变化**，返回结构基本一致（仅 `cityid` 等两处字段差异，见下），需要确认的点：
 
 ### 必须修改的调用
 
-| 调用形态 | v2.0 行为 | v3.0 行为 | 处理 |
+| 调用形态 | 升级前（SDK v2.0） | 升级后（SDK v2.1） | 处理 |
 |---|---|---|---|
 | `suggestion({ query })` 未传 `region` | SDK 默认城市"全国" | 服务端报 `status:2`（region/bounds/location 不能全空） | 调用处补 `region`（城市名/区县名） |
 | `search({ location })` 未传 `query` | SDK 默认关键词"生活服务$美食&酒店" | 服务端报参数错误 | 调用处补 `query` |

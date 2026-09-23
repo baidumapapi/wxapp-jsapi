@@ -1,7 +1,7 @@
 /**
  * @file 微信小程序JSAPI
  * @author bmap fe
- * @version v3.0.0
+ * @version v2.1.0
  */
 
 /**
