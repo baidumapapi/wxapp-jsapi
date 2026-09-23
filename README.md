@@ -41,19 +41,6 @@
   - **Demo**：新增 V3 接口测试页（v3test，around/region/suggestion 一键调用、控制台输出入参与结果）。
   - 移除 `/place/v2/search` 与 `/place/v2/suggestion` 路径（route/weather/staticMap 等无 V3 版本，保持不变）。
 
-  **升级说明（v2.0 → v2.1）**：方法名与回调签名没有变化，返回结构基本一致（仅 `cityid` 等两处字段差异），升级前需要确认：
-  - **必须修改的调用**：
-
-    | 调用形态 | 升级前（SDK v2.0） | 升级后（SDK v2.1） | 处理 |
-    |---|---|---|---|
-    | `suggestion({ query })` 未传 `region` | SDK 默认城市"全国" | 服务端报 `status:2`（region/bounds/location 不能全空） | 调用处补 `region`（城市名/区县名） |
-    | `search({ location })` 未传 `query` | SDK 默认关键词"生活服务$美食&酒店" | 服务端报参数错误 | 调用处补 `query` |
-
-  - **周边检索默认半径**：未传 `radius` 时由 SDK 的 2000 米改为服务端默认 **1000 米**——需要更大召回范围请显式传 `radius`（如 `2000`/`5000`）。
-  - **suggestion 返回值**：元素不再包含 `cityid`（城市编码），可改用 `city` / `adcode`；检索结果（search）V3 净增 `town` / `town_code`（只增不减）。
-  - **无需修改**：常规调用 `search({ query, location })` / `search({ query, region })` 原样可用，传 `region` 的城市检索为新增能力（无需定位）；`wxMarkerData` 为 SDK 生成结构无变化，回调参数、类型声明、SN 签名与定位授权逻辑均不变。
-  - **迁移检查清单**：① 全局搜索 `suggestion(` 调用确认均传 `region`；② 全局搜索 `search(` 调用确认均传 `query`，周边检索场景评估是否需显式 `radius`；③ 对结果顺序敏感的业务（如订单、推荐位）升级后与 v2 对拍一次。
-
 ## 概述
 百度地图微信小程序JavaScript API（下文简称小程序JSAPI），对百度地图Web服务API中的部分lbs接口，按照微信小程序的规范进行了前端JS封装，以方便微信小程序开发者的调用。
 
