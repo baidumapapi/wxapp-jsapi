@@ -1,7 +1,7 @@
 /**
  * @file 微信小程序JSAPI
  * @author bmap fe
- * @version v2.0.0
+ * @version v3.0.0
  */
 
 /**
@@ -24,8 +24,10 @@
 /** API 地址与路径（对应百度 Web 服务 API） */
 const API_HOST = 'https://api.map.baidu.com';
 const API_PATH = {
-  search: '/place/v2/search',
-  suggestion: '/place/v2/suggestion',
+  // Place API V3：按检索形态拆分接口（v2 的 /place/v2/search 已迁移为 around/region）
+  search: '/place/v3/around',
+  regionSearch: '/place/v3/region',
+  suggestion: '/place/v3/suggestion',
   reverseGeocoding: '/reverse_geocoding/v3',
   geocoding: '/geocoding/v3',
   driving: '/direction/v2/driving',
@@ -578,28 +580,50 @@ class BMapWX {
   }
 
   /**
-   * POI 周边检索
+   * POI 检索（Place API V3）
    *
-   * @param {Object}   param               检索参数（其余与百度 Place API 一致）
-   * @param {string}   [param.query]       检索关键词，默认 "生活服务$美食&酒店"
-   * @param {string}   [param.location]    中心点，默认当前定位
-   * @param {Function} [param.success]     成功回调，入参 { originalData, wxMarkerData }
-   * @param {Function} [param.fail]        失败回调，入参 { errMsg, statusCode, message }
+   * 按入参自动选择检索形态（入参名与百度官方文档一致）：
+   * - 传 `region`：行政区划（城市）检索，无需定位 —— /place/v3/region
+   * - 未传 `region`：圆形区域（周边）检索，中心点默认当前定位 —— /place/v3/around
+   *
+   * @param {Object}   param                检索参数
+   * @param {string}   [param.query]        检索关键词（必选，未传由服务端返回参数错误）
+   * @param {string}   [param.region]       城市名/区县名（与 location 二选一；传了走城市检索，不触发定位）
+   * @param {string}   [param.location]     中心点 "纬度,经度"，默认当前定位（周边检索）
+   * @param {number}   [param.radius]       检索半径（米）；不传时由服务端按默认值处理（官方默认 1000）
+   * @param {string}   [param.tag]          检索分类偏好，与 query 组合（如 "美食"）
+   * @param {string}   [param.type]         对 query 召回结果二次筛选（如 query=美食&type=火锅）
+   * @param {string}   [param.radius_limit] 是否严格限制在半径内（'true'/'false'）
+   * @param {string}   [param.center]       城市检索的距离排序基准点（同 location 格式）
+   * @param {Function} [param.success]      成功回调，入参 { originalData, wxMarkerData }
+   * @param {Function} [param.fail]         失败回调，入参 { errMsg, statusCode, message }
    */
   search(param = {}) {
+    const isRegion = !!param.region;
     this._request(param, {
-      path: API_PATH.search,
-      needLocation: true,
+      path: isRegion ? API_PATH.regionSearch : API_PATH.search,
+      needLocation: !isRegion,
       buildParams: loc => ({
-        query: param.query || '生活服务$美食&酒店',
-        scope: param.scope || 1,
+        // query 为必选（不传则由服务端校验报错），未传不代填默认关键词
+        query: param.query || '',
+        // 城市检索传 region；周边检索传 location（缺省时由定位兜底），另一项为空会被全局剔空
+        region: param.region || '',
+        location: loc && loc.latLng,
+        // 与官方文档一致：未传参数不补默认值（radius 服务端默认 1000、分页 10/0、scope 1、output json），
+        // 请求参数保持最小集；仅保留坐标正确性必需的 coord_type / ret_coordtype
+        radius: param.radius || '',
+        tag: param.tag || '',
+        type: param.type || '',
+        radius_limit: param.radius_limit ? 'true' : '',
+        is_light_version: param.is_light_version ? 'true' : '',
+        extensions_adcode: param.extensions_adcode ? 'true' : '',
+        center: param.center || '',
+        scope: param.scope || '',
         filter: param.filter || '',
         coord_type: param.coord_type || 2,
-        page_size: param.page_size || 10,
-        page_num: param.page_num || 0,
-        output: param.output || 'json',
-        radius: param.radius || 2000,
-        location: loc.latLng,
+        page_size: param.page_size || '',
+        page_num: param.page_num || '',
+        output: param.output || '',
         ak: this.ak,
         ret_coordtype: 'gcj02ll',
       }),
@@ -619,11 +643,12 @@ class BMapWX {
   }
 
   /**
-   * 关键词模糊检索（输入联想）
+   * 关键词模糊检索（输入联想，Place API V3）
    *
    * @param {Object}   param              检索参数
    * @param {string}   [param.query]       输入的关键字
    * @param {string}   [param.region]      检索城市，默认全国
+   * @param {string}   [param.location]    综合排序参考点（"纬度,经度"），仅影响排序不限定范围
    * @param {Function} [param.success]     成功回调，入参 { originalData, result }
    * @param {Function} [param.fail]        失败回调，入参 { errMsg, statusCode, message }
    */
@@ -631,17 +656,20 @@ class BMapWX {
     this._request(param, {
       path: API_PATH.suggestion,
       buildParams: () => ({
+        // region 为文档必选（region/bounds/location 三选一），未传则不携带、由服务端校验
         query: param.query || '',
-        region: param.region || '全国',
-        city_limit: param.city_limit || false,
-        output: param.output || 'json',
+        region: param.region || '',
+        city_limit: param.city_limit ? 'true' : '',
+        location: param.location || '',
+        output: param.output || '',
         ak: this.ak,
         ret_coordtype: 'gcj02ll',
       }),
       ok: isBaiduOk,
       parse: res => ({
         originalData: res,
-        result: res.result || [],
+        // V3 返回字段为 results（与 v2 的 result 不同名），统一暴露为 result 保持 SDK 契约
+        result: res.result || res.results || [],
       }),
     });
   }
@@ -662,7 +690,8 @@ class BMapWX {
         location: loc.latLng,
         coordtype: param.coordtype || 'gcj02ll',
         ret_coordtype: 'gcj02ll',
-        radius: param.radius || 1000,
+        // 与文档一致：未传不补默认（服务端默认 1000）
+        radius: param.radius || '',
         output: param.output || 'json',
         ak: this.ak,
         extensions_poi: param.extensions_poi !== undefined ? param.extensions_poi : 1,

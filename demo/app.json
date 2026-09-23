@@ -4,6 +4,7 @@
     "pages/explore/explore",
     "pages/search/search",
     "pages/suggestion/suggestion",
+    "pages/v3test/v3test",
     "pages/geocoding/geocoding",
     "pages/regeocoding/regeocoding",
     "pages/route/route",

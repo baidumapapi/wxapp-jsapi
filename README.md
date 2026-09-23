@@ -1,4 +1,4 @@
-# 百度地图微信小程序JS API v2.0
+# 百度地图微信小程序JS API v3.0
 
 ## 相关链接
 [百度地图开放平台](https://lbs.baidu.com/)  
@@ -26,6 +26,47 @@
   - **Demo**：产品化示例（周边探索、多方案路线规划、静态图取景、天气主题与国际城市切换等）。
   ⚠️ 接口参数/返回值语义变化见各小节；`request 域名` 要求不变。
 
+* 2026.09（v3.0）：Place API 全面升级 V3，移除 v2 检索路径。
+  - **search 升级**：按入参自动分派 —— 传 `region` 走 `/place/v3/region` 城市检索（**无需定位**）；
+    未传则走 `/place/v3/around` 周边检索（`location` 默认当前定位）。入参名与官方 V3 文档一致，
+    新增 `tag` / `type` / `radius_limit` / `is_light_version` / `extensions_adcode` / `center` 透传。
+  - **行为变化**：请求参数最小化——未传的 `radius` / `page_size` / `page_num` / `scope` / `output` 等一律不携带，
+    与官方文档一致（服务端按默认值处理：radius 1000、分页 10/0、scope 基本信息、JSON 输出）；
+    V3 排序策略更贴近百度地图 App 推荐。
+  - **suggestion 注意**：`region` 为必选参数（region/bounds/location 三选一），未传将由服务端返回参数错误。
+  - **suggestion 升级**：`/place/v3/suggestion`；V3 返回字段为 `results`（复数），SDK 统一输出 `result` 保持契约。
+  - 移除 `/place/v2/search` 与 `/place/v2/suggestion` 路径（route/weather/staticMap 等无 V3 版本，保持不变）。
+
+## 升级指南（v2 → v3）
+
+v3.0 将 Place API 迁移至 V3 并做了请求参数最小化（未传参数不再代填默认值，与官方文档一致）。
+**方法名、回调签名与返回结构没有变化**，但以下三处需要确认：
+
+### 必须修改的调用
+
+| 调用形态 | v2.0 行为 | v3.0 行为 | 处理 |
+|---|---|---|---|
+| `suggestion({ query })` 未传 `region` | SDK 默认城市"全国" | 服务端报 `status:2`（region/bounds/location 不能全空） | 调用处补 `region`（城市名/区县名） |
+| `search({ location })` 未传 `query` | SDK 默认关键词"生活服务$美食&酒店" | 服务端报参数错误 | 调用处补 `query` |
+
+### 行为变化
+
+- **周边检索默认半径**：未传 `radius` 时由 SDK 的 2000 米改为服务端默认 **1000 米**——需要更大召回范围请显式传 `radius`（如 `2000`/`5000`）。
+- **结果排序**：V3 排序策略更贴近百度地图 App 推荐（`is_light_version=false`），与 v2 结果顺序可能不同；对"默认取第一条"类业务建议升级后对拍一次。
+
+### 无需修改
+
+- 常规调用 `search({ query, location })` / `search({ query, region })` 原样可用，传 `region` 的城市检索为新增能力（无需定位）；
+- 返回结构（`wxMarkerData` / `result` 字段与元素均兼容，`telephone` 仍在顶层）、回调参数、类型声明、SN 签名与定位授权逻辑均无变化。
+
+### 迁移检查清单
+
+1. 全局搜索 `suggestion(` 调用：确认均传 `region`；
+2. 全局搜索 `search(` 调用：确认均传 `query`；周边检索场景评估是否需显式 `radius`；
+3. 对结果顺序敏感的业务（如订单、推荐位）升级后与 v2 对拍一次。
+
+> 注：多边形区域检索（`bounds`，`/place/v3/polygon`）需账号单独开通权限，本版本未纳入。
+
 ## 概述
 百度地图微信小程序JavaScript API（下文简称小程序JSAPI），对百度地图Web服务API中的部分lbs接口，按照微信小程序的规范进行了前端JS封装，以方便微信小程序开发者的调用。
 
@@ -35,7 +76,7 @@
 
  小程序JSAPI            | Web服务API        
 ---------------------- | -------------
- search                | Place API的周边检索部分
+ search                | Place API V3（city 城市检索 /place/v3/region、周边检索 /place/v3/around）
  suggestion            | Place Suggestion API
  reverseGeocoding      | Geocoding API的逆地址解析部分（旧名 regeocoding 兼容）
  geocoding             | Geocoding API的正地址解析部分
@@ -55,8 +96,10 @@
 const { BMapWX } = require('./libs/bmap-wx.min.js');
 const bmap = new BMapWX({ ak: '你的AK' }); // 服务端 AK 可另传 sk，SDK 自动生成 SN 签名
 
+// 周边检索（默认）：中心点为当前定位或 location；城市检索传 region 即可，无需定位
 bmap.search({
   query: '天安门',
+  // region: '北京', // 传 region 走 /place/v3/region 城市检索（与 location 二选一）
   success(res) {
     console.log(res.wxMarkerData); // 小程序 map markers（gcj02），可直接用于 <map markers>
   },
@@ -165,21 +208,51 @@ bmap.search({
  ### 参数:
  
  <h4 id="1.1">searchParam: Object</h4>
- search检索参数对象结构
- 
+ search() 按入参自动选择检索形态（`region` 与 `location` 二选一，对应两个官方接口）：
+
+ ```js
+ search({ query, location })  // 周边检索 → /place/v3/around（location 缺省为当前定位，需定位授权）
+ search({ query, region })    // 城市检索 → /place/v3/region（无需定位；region 与 location 同时传时以 region 为准，SDK 不携带 location）
+ ```
+
+ **周边检索（/place/v3/around）参数**
+
   属性名                | 类型                | 是否必须| 描述
 ---------------------- | -------------------|--------| -----
- location              | string             | 否      |经纬度例如：39.915,116.404 默认值为当前定位点
+ query                 | string             | 是      | 检索关键字（未传由服务端返回参数错误）
+ location              | string             | 否      | 中心点经纬度（"纬度,经度"），默认当前定位点
+ radius                | number             | 否      | 检索半径（米）；不传由服务端按默认值处理（官方默认 1000）
+ radius_limit          | string             | 否      | 是否严格限定在半径内（'true'/'false'）
+ tag                   | string             | 否      | 检索分类偏好，与 query 组合（如 "美食"）
+ type                  | string             | 否      | 对 query 召回结果二次筛选（如 query=美食&type=火锅）
+ is_light_version      | string             | 否      | 'true' 优先检索速度；不传时排序更贴百度地图 App 推荐
+ extensions_adcode     | string             | 否      | 是否召回国标行政区划编码（'true'/'false'）
  iconPath              | string             | 否      |小程序marker图标
  iconTapPath           | string             | 否      |小程序点击后图标
  width                 | number             | 否      |marker宽，新版基础库必填，未传时 SDK 默认 30
  height                | number             | 否      |marker高，新版基础库必填，未传时 SDK 默认 30 
  alpha                 | number             | 否      |marker透明度，默认为1
- query                 | string             | 否      | 检索关键字，默认 "生活服务$美食&酒店"
  success               | Function([searchSuccess](#1.2))|否   | 检索成功后回调回调函数
  fail                  | Function([searchFail](#1.3))|否      | 检索失败后回调函数
- 
- 其他参数和[Place API](http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-placeapi)请求参数一致。
+
+ **城市检索（/place/v3/region）参数**
+
+  属性名                | 类型                | 是否必须| 描述
+---------------------- | -------------------|--------| -----
+ query                 | string             | 是      | 检索关键字（未传由服务端返回参数错误）
+ region                | string             | 是      | 城市名/区县名
+ tag                   | string             | 否      | 检索分类偏好，与 query 组合（如 "美食"）
+ center                | string             | 否      | 距离排序基准点（"纬度,经度"，同 location 格式）
+ extensions_adcode     | string             | 否      | 是否召回国标行政区划编码（'true'/'false'）
+ iconPath              | string             | 否      |小程序marker图标
+ iconTapPath           | string             | 否      |小程序点击后图标
+ width                 | number             | 否      |marker宽，新版基础库必填，未传时 SDK 默认 30
+ height                | number             | 否      |marker高，新版基础库必填，未传时 SDK 默认 30 
+ alpha                 | number             | 否      |marker透明度，默认为1
+ success               | Function([searchSuccess](#1.2))|否   | 检索成功后回调回调函数
+ fail                  | Function([searchFail](#1.3))|否      | 检索失败后回调函数
+
+ 其余（分页 `page_size`/`page_num`、`scope`、`output` 等）与[Place API V3](https://lbs.baidu.com/docs/webapi?title=placev3/guide/webservice-placeapiV3/interfaceDocumentV3)一致，SDK 透传但未传不携带；已固定 `ret_coordtype=gcj02ll`，`coord_type` 默认 2（gcj02）。
  
  <h4 id="1.2">searchSuccess: Object</h4>
  search检索成功回调函数的参数 
@@ -222,7 +295,7 @@ bmap.search({
  success               | Function([suggestionSuccess](#2.2))|否   | 检索成功后回调函数
  fail                  | Function([suggestionFail](#2.3))|否      | 检索失败后回调函数
  
- 其他参数和[Place Suggestion API](http://lbsyun.baidu.com/index.php?title=webapi/place-suggestion-api)请求参数一致（SDK 已固定 `ret_coordtype=gcj02ll`，返回坐标可直接用于小程序地图）。
+ 其他参数和[Place Suggestion API](http://lbsyun.baidu.com/index.php?title=webapi/place-suggestion-api)请求参数一致（V3 路径 /place/v3/suggestion；SDK 已固定 `ret_coordtype=gcj02ll`；`location` 可传排序参考点）。
 
  示例：
 

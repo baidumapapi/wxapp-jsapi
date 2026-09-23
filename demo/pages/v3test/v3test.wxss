@@ -1,0 +1,72 @@
+.intro {
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  background: #eef7e4;
+  border-radius: 16rpx;
+  color: #4a7a12;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.case-card {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16rpx;
+  padding: 24rpx 28rpx;
+}
+
+.case-hover {
+  opacity: 0.7;
+}
+
+.case-running {
+  border: 2rpx solid #4db900;
+}
+
+.case-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.case-desc {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #8a8f99;
+}
+
+.result-card {
+  padding: 24rpx 28rpx;
+}
+
+.result-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.result-line {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: #8a8f99;
+  word-break: break-all;
+}
+
+.result-ok {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #4db900;
+  font-weight: 500;
+}
+
+.result-err {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #e0463e;
+}
+
+.result-poi {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #4b5563;
+}

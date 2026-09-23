@@ -78,6 +78,54 @@ test('SN 签名：配置 sk 后请求携带 ak+sn，sn 与官方算法一致', a
   assert.ok(data.timestamp, '必须有 timestamp');
 });
 
+test('region 检索：走 /place/v3/region 且不触发定位', async () => {
+  let located = false;
+  global.wx = {
+    getLocation: () => { located = true; },
+    request: opt => {
+      global.__lastUrl = opt.url;
+      global.__lastData = opt.data;
+      setTimeout(() => opt.success({ statusCode: 200, data: { status: 0, results: [] } }), 0);
+    },
+  };
+  const b = new BMapWX({ ak: 'x' });
+  await new Promise(resolve => {
+    b.search({ query: '美食', region: '南昌', success: resolve, fail: resolve });
+  });
+  assert.ok(global.__lastUrl.endsWith('/place/v3/region'), '应请求 /place/v3/region，实际 ' + global.__lastUrl);
+  assert.strictEqual(global.__lastData.region, '南昌', 'region 应透传');
+  assert.strictEqual(global.__lastData.location, undefined, 'region 检索不应携带 location');
+  assert.strictEqual(global.__lastData.radius, undefined, 'region 检索不应携带周边检索参数');
+  assert.strictEqual(located, false, 'region 检索不应触发定位');
+});
+
+test('周边检索：缺省 location 时定位兜底，未传参数不补默认值', async () => {
+  let locationType = '';
+  global.wx = {
+    getLocation: opt => {
+      locationType = opt.type;
+      opt.success({ latitude: 39.9, longitude: 116.4 });
+    },
+    request: opt => {
+      global.__lastUrl = opt.url;
+      global.__lastData = opt.data;
+      setTimeout(() => opt.success({ statusCode: 200, data: { status: 0, results: [] } }), 0);
+    },
+  };
+  const b = new BMapWX({ ak: 'x' });
+  await new Promise(resolve => {
+    b.search({ query: '美食', success: resolve, fail: resolve });
+  });
+  assert.ok(global.__lastUrl.endsWith('/place/v3/around'), '应请求 /place/v3/around，实际 ' + global.__lastUrl);
+  assert.strictEqual(global.__lastData.location, '39.9,116.4', '缺省 location 应取定位点');
+  assert.strictEqual(global.__lastData.ret_coordtype, 'gcj02ll');
+  // 最小集：未传参数一律不携带（与官方文档一致，服务端按默认处理）
+  ['radius', 'scope', 'page_size', 'page_num', 'output', 'tag', 'type', 'center'].forEach(k => {
+    assert.strictEqual(global.__lastData[k], undefined, `未传 ${k} 时不应携带`);
+  });
+  assert.strictEqual(locationType, 'gcj02', '定位坐标类型应为 gcj02');
+});
+
 test('transit：gcj02 输入自动转换为百度坐标后发出', async () => {
   captureStub({ statusCode: 200, data: { status: 0, result: { routes: [{ distance: 1, duration: 1, steps: [] }] } } });
   const b = new BMapWX({ ak: 'x' });
@@ -243,6 +291,15 @@ if (AK) {
       b.search({ query: '美食', location: '39.908823,116.397470', success: resolve, fail: reject });
     });
     assert.ok(res.wxMarkerData.length > 0);
+    assert.ok(Number.isFinite(res.wxMarkerData[0].latitude));
+  });
+
+  test('region 检索：城市检索返回 POI（无需定位）', async () => {
+    global.wx = { request: callThrough };
+    const res = await new Promise((resolve, reject) => {
+      b.search({ query: '南昌大学', region: '南昌', success: resolve, fail: reject });
+    });
+    assert.ok(res.wxMarkerData.length > 0, '城市检索应返回 POI');
     assert.ok(Number.isFinite(res.wxMarkerData[0].latitude));
   });
 

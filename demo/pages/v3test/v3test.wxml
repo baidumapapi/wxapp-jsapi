@@ -1,0 +1,28 @@
+<view class="page">
+  <view class="intro">Place API V3 接口测试：点击按钮发起调用，完整入参与返回结果见控制台（Console），页面展示最近一次摘要。</view>
+
+  <view
+    class="card case-card {{activeId === item.id && running ? 'case-running' : ''}}"
+    wx:for="{{cases}}"
+    wx:key="id"
+    data-id="{{item.id}}"
+    bindtap="onCaseTap"
+    hover-class="case-hover"
+  >
+    <view class="case-name">{{item.label}}</view>
+    <view class="case-desc">{{item.desc}}</view>
+  </view>
+
+  <view class="loading" wx:if="{{running}}">
+    <view class="spinner" />
+    <text>调用中…</text>
+  </view>
+
+  <view class="card result-card" wx:if="{{log}}">
+    <view class="result-title">{{log.label}}</view>
+    <view class="result-line">入参：{{log.paramsText}}</view>
+    <view class="result-ok" wx:if="{{log.result}}">{{log.result}}</view>
+    <view class="result-err" wx:if="{{log.error}}">{{log.error}}</view>
+    <view class="result-poi" wx:for="{{preview}}" wx:key="name">· {{item.title || item.name}}</view>
+  </view>
+</view>

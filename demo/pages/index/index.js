@@ -17,6 +17,11 @@ const DEMOS = [
     desc: 'suggestion()：输入关键字实现地点联想补全',
   },
   {
+    path: '/pages/v3test/v3test',
+    title: 'V3 接口测试',
+    desc: 'Place API V3：around/region/suggestion 按钮一键调用，控制台输出入参与结果',
+  },
+  {
     path: '/pages/geocoding/geocoding',
     title: '地理编码',
     desc: 'geocoding()：地址与建筑名 -> 经纬度',

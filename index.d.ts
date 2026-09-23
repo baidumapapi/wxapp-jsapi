@@ -189,15 +189,29 @@ export interface LocationResult {
 
 /* ---------------- 各方法参数（param extends ParamBase<对应 success 类型>） ---------------- */
 
-/** search 检索参数 */
+/** search 检索参数（Place API V3；region 与 location 二选一，传 region 走城市检索） */
 export interface SearchParam extends ParamBase<SearchSuccess> {
-  /** 中心点"纬度,经度"，默认当前定位 */
-  location?: string;
-  /** 检索关键词，默认 "生活服务$美食&酒店" */
+  /** 检索关键词（必选；未传由服务端返回参数错误） */
   query?: string;
-  /** 检索半径（米），默认 2000 */
+  /** 城市名/区县名：传了走 /place/v3/region 城市检索（无需定位），与 location 二选一 */
+  region?: string;
+  /** 中心点"纬度,经度"：周边检索（/place/v3/around），默认当前定位 */
+  location?: string;
+  /** 检索半径（米）；不传时由服务端按默认值处理（官方默认 1000） */
   radius?: number;
-  /** 分页：每页条数（默认 10）与页码（默认 0） */
+  /** 是否严格限定在半径内（'true'/'false'） */
+  radius_limit?: string;
+  /** 优先保证检索速度（'true'/'false'）；不传时排序更贴百度地图 App 推荐 */
+  is_light_version?: string;
+  /** 检索分类偏好，与 query 组合（如 "美食"） */
+  tag?: string;
+  /** 对 query 召回结果二次筛选（如 query=美食&type=火锅） */
+  type?: string;
+  /** 城市检索的距离排序基准点（同 location 格式） */
+  center?: string;
+  /** 是否召回国标行政区划编码（'true'/'false'） */
+  extensions_adcode?: string;
+  /** 分页：每页条数与页码（未传由服务端按默认 10/0 处理） */
   page_size?: number;
   page_num?: number;
   /** 检索范围：scope=1 取默认字段，2 返回附加信息 */
@@ -209,14 +223,16 @@ export interface SearchParam extends ParamBase<SearchSuccess> {
   /* marker 样式透传：iconPath / iconTapPath / width / height / alpha */
 }
 
-/** suggestion 检索参数 */
+/** suggestion 检索参数（Place API V3） */
 export interface SuggestionParam extends ParamBase<SuggestionSuccess> {
-  /** 输入的关键字 */
+  /** 输入的关键字（必选） */
   query?: string;
-  /** 检索城市，默认全国 */
+  /** 检索城市（必选；region/bounds/location 三选一，未传由服务端返回参数错误） */
   region?: string;
   city_limit?: boolean;
-  /** 返回格式（默认 json） */
+  /** 综合排序参考点"纬度,经度"（仅影响排序，不限定范围） */
+  location?: string;
+  /** 返回格式（未传默认 json） */
   output?: string;
 }
 
@@ -232,7 +248,7 @@ export interface ReverseGeocodingParam extends ParamBase<GeocodingSuccess> {
   extensions_road?: boolean;
   /** 是否返回乡镇街道（默认 false） */
   extensions_town?: boolean;
-  /** 检索半径（米），默认 1000 */
+  /** 检索半径（米）；不传时由服务端按默认值处理（官方默认 1000） */
   radius?: number;
   /** 返回语言（如 zh-CN），默认 zh-CN */
   language?: string;

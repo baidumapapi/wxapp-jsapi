@@ -1,6 +1,6 @@
 {
   "name": "wxapp-jsapi",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "百度地图微信小程序 JS API（bmap-wx）：对百度地图 Web 服务 API 进行小程序规范封装",
   "main": "src/bmap-wx.js",
   "types": "index.d.ts",
